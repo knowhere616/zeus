@@ -360,6 +360,25 @@ def csv_from_stv_polls(election, polls, lang, outfile=None):
                     writerow([strforce(cand_name),strforce(votes),\
                     strforce(draw), strforce(action)])
 
+            valid = strforce(_('VALID'))
+            invalid = strforce(_('INVALID'))
+            blank = strforce(_('BLANK'))
+
+            writerow([])
+            writerow([])
+            writerow([])
+            writerow([])
+            writerow([strforce(_("Ballots"))]),
+            for ballot_index, ballot in enumerate(poll.zeus.get_stv_ballots()):
+                if ballot is None:
+                    writerow([ballot_index, "", invalid])
+                elif len(ballot) == 0:
+                    writerow([ballot_index, "", blank])
+                else:
+                    for cand_index, cand in enumerate(ballot):
+                        writerow([ballot_index, cand_index, strforce(cand)])
+                writerow([])
+                writerow([])
 
 
 def csv_from_score_polls(election, polls, lang, outfile=None):

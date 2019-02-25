@@ -566,6 +566,21 @@ class ZeusDjangoElection(ZeusCoreElection):
             excluded_voters[voter.uuid] = voter.exclude_reason
         return excluded_voters
 
+    def get_stv_ballots(self):
+        candidates = self.do_get_candidates()
+        cands_count = len(candidates)
+        ballots_data = self.poll.result[0]
+        ballots = []
+        for ballot in ballots_data:
+            if ballot is None:
+                return ballot
+            ballot = to_absolute_answers(gamma_decode(ballot, cands_count,cands_count),
+                                         cands_count)
+            ballot = [candidates[i] for i in ballot]
+            ballots.append(ballot)
+        return ballots
+
+
     def get_results(self):
         if self.poll.get_module().results_module == 'score':
             # last entry should be question min/max params
