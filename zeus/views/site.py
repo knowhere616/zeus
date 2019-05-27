@@ -412,3 +412,14 @@ def handler400(request):
 def handler404(request):
     msg = _("The requested page was not found.")
     return error(request, 404 , msg)
+
+
+def csv_report(request):
+    from zeus.utils.stats import elections_from_csv
+    data = elections_from_csv()
+    user = request.zeususer
+    return render_template(request, "zeus/elections_held", {
+        'menu_active': 'elections_held',
+        'user': user,
+        'data': data
+    })

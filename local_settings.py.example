@@ -111,3 +111,8 @@ SECRET_KEY = None
 
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (('en', 'English'), ('gr', 'Greek'))
+
+# related to /elections-held view
+ZEUS_ELECTION_STATS_CSV_PATH = ""
+ZEUS_ELECTION_STATS_INSTITUTION_MAP_PATH = ""
+ZEUS_ELECTION_STATS_SMART_MAP = True

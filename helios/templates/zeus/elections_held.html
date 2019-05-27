@@ -1,0 +1,82 @@
+{% extends "server_ui/templates/base.html" %}
+{% load i18n l10n %}
+
+{% block tabs_menu %}
+{% include "i18n/en/zeus/_menu_partial.html" %}
+{% endblock %}
+
+{% block content %}
+<style>
+.held_stats .stats_wrapper table { width: 100%; }
+.held_stats .stats_wrapper { margin: 0; padding: 0; }
+.held_stats .stat {
+    margin: 0;
+    padding: 0;
+}
+
+.held_stats .stat {
+    padding-right: 20px;
+    margin-bottom: 40px;
+}
+
+.held_stats .stat span {
+    font-size: 3rem;
+    font-weight: bold;
+    display:block;
+    padding-right: 5px;
+    color: #314963;
+    text-align: right;
+}
+.held_stats .stat h4 {
+    text-align: right;
+    color: #fff;
+    padding: 5px;
+    font-size: 1.9rem;
+    border-bottom: 1px solid #efefef;
+    border-top: 1px solid #efefef;
+    border-left: 1px solid #efefef;
+    border-right: 1px solid #efefef;
+    background-color: #153346;
+}
+</style>
+
+<div class="row held_stats">
+  <div class="columns twelve">
+    <h4>{% trans "Usage" %}</h4>
+    <div class="columns top twelve stats_wrapper">
+        <div class="stat columns four">
+            <h4>{% trans "Institutions" %}</h4>
+            <span>{{data.institutions_count}}</span>
+        </div>
+        <div class="stat columns four">
+            <h4>{% trans "Polls" %}</h4>
+            <span>{{data.polls_count}}</span>
+        </div>
+        <div class="stat columns four">
+            <h4>{% trans "Voters" %}</h4>
+            <span>{{data.voters_count|localize}}</span>
+        </div>
+    </div>
+    <div class="columns twelve stats_wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans "Institution" %}</th>
+                <th>{% trans "Polls" %}</th>
+                <th>{% trans "Voters" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inst in data.institutions_sorted %}
+                <tr>
+                    <td>{{inst.name}}</td>
+                    <td>{{inst.polls}}</td>
+                    <td>{{inst.voters}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
