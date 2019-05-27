@@ -139,8 +139,8 @@ class SMSBackend(ContactBackend):
             data = self.get_data(update=True)
             if not self.has_available_deliveries():
                 raise ContactBackend.Error("No sms deliveries available")
-            self.logger.info("Notifying voter %r for '%s' via sms to '%s'" % (voter.voter_login_id, id, voter.voter_mobile))
             dlr_url = settings.SECURE_URL_HOST + reverse('election_poll_sms_delivery', args=(voter.poll.election.uuid, voter.poll.uuid))
+            self.logger.info("Notifying voter %r for '%s' via sms to '%s' (status report url %s)" % (voter.voter_login_id, id, voter.voter_mobile, dlr_url))
             client = mobile.get_client(voter.poll.election, self.data, dlr_url=dlr_url)
             sent, error_or_code = client.send(voter.voter_mobile, body)
             msg_uid = client._last_uid

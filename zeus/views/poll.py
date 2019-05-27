@@ -500,6 +500,7 @@ def voters_email(request, election, poll=None, voter_uuid=None):
     if not q_param:
         filtered_voters = filtered_voters.none()
     else:
+        election.logger.info("Filter recipient voters based on params: %r", q_param)
         filtered_voters = election.get_module().filter_voters(filtered_voters, q_param, request)
 
         if not filtered_voters.count():
