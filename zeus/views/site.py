@@ -8,7 +8,8 @@ from time import time
 from random import randint
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponseRedirect, HttpResponseNotAllowed, \
+    HttpResponsePermanentRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -412,6 +413,10 @@ def handler400(request):
 def handler404(request):
     msg = _("The requested page was not found.")
     return error(request, 404 , msg)
+
+
+def csv_report_redirect(request):
+    return HttpResponsePermanentRedirect(reverse('site_csv_report'))
 
 
 def csv_report(request):

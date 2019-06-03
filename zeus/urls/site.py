@@ -11,6 +11,7 @@ urlpatterns = patterns('zeus.views.site',
     url(r'^contact/$', 'contact', name='site_contact'),
     url(r'^stats/$', 'stats', name='site_stats'),
     url(r'^usage/$', 'csv_report', name='site_csv_report'),
+    url(r'^elections-held/$', 'csv_report_redirect', name='site_csv_report_redirect'),
     url(r'^demo$', 'demo', name='site_demo'),
     url(r'^error/(?P<code>[0-9]+)$', 'error', name='error')
 )
