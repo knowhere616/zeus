@@ -26,3 +26,4 @@ deploy/config.yaml
 *.egg-info
 /dist
 /.venv
+terms/terms_*.html
