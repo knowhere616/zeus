@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import json
 import bleach
 import urlparse
@@ -525,3 +526,8 @@ def resolve_ip(request):
     client_address = request.META.get('HTTP_X_FORWARDED_FOR', remote_addr)
     client_address = filter(lambda s:s.strip(), map(lambda x:x.strip(), client_address.split(",")))[-1]
     return client_address
+
+
+def safe_unlink(path):
+    if os.path.exists(path):
+        os.unlink(path)
