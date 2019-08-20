@@ -163,7 +163,7 @@ def load_score_results(data, repr_data, qdata):
 
     parties_results = [('', len(jsondata['ballots']))]
     total_votes = len(jsondata['ballots'])
-    blank_votes = len([b for b in jsondata['ballots'] if not b['candidates']])
+    blank_votes = len([b for b in jsondata['ballots'] if b.get('candidates') and not b['candidates']])
     candidates_results = {'': [(c.replace("{newline}", " "), t) for t, c in jsondata['totals']]}
     return (total_votes, blank_votes, parties_results, candidates_results)
 
