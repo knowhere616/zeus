@@ -67,7 +67,7 @@ from zeus.model_features import ElectionFeatures, PollFeatures, \
 from zeus.model_tasks import TaskModel, PollTasks, ElectionTasks
 from zeus import help_texts as help
 from zeus.log import init_election_logger, init_poll_logger
-from zeus.utils import decalize, undecalize, CSVReader
+from zeus.utils import decalize, undecalize, CSVReader, safe_unlink
 
 
 logger = logging.getLogger(__name__)
@@ -156,6 +156,11 @@ class PollMix(models.Model):
         ordering = ['-mix_order']
         unique_together = [('poll', 'mix_order')]
 
+
+    @property
+    def mix_path(self):
+        fname = str(self.pk) + ".canonical"
+        return os.path.join(ZEUS_MIXES_PATH, fname)
 
     def store_mix_in_file(self, mix):
         """
@@ -347,12 +352,6 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
     def __init__(self, *args, **kwargs):
         self._logger = None
         super(Election, self).__init__(*args, **kwargs)
-
-
-    def reset_remote_mixing(self):
-        with transaction.atomic():
-            for poll in self.polls.all():
-                poll.mixes.filter(mix_order__gt=0).delete()
 
 
     @property
@@ -719,6 +718,42 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
 
     def get_module(self):
         return get_election_module(self)
+    
+    def delete_trustees(self, dry=True):
+        for trustee in self.trustees.filter():
+            if not dry:
+                self.logger.info("Delete trustee %s", trustee.email)
+                trustee.delete()
+            else:
+                print "Delete %r" % trustee
+
+    def delete_polls(self, dry=True):
+        for poll in self.polls.filter():
+            poll.delete_mixes(dry)
+            poll.delete_proofs(dry)
+            poll.delete_results(dry)
+            if not dry:
+                self.logger.info("Delete poll %s", poll.uuid)
+                poll.delete()
+            else:
+                print "Delete poll %r" % poll.uuid
+
+    def delete(self, dry=True):
+        assert self.pk
+        self.logger.info("Removing election data.")
+        with transaction.atomic():
+            self.delete_trustees(dry)
+            self.delete_polls(dry)
+            if not dry:
+                self.logger.info("Election deleted.")
+                super(Election, self).delete()
+            else:
+                print "Delete election %r" % self.uuid
+        try:
+            return self.logger.logger.handlers[0].stream.name
+        except:
+            return None
+
 
 
 class PollQuerySet(QuerySet):
@@ -1517,6 +1552,36 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
   def forum_end_date(self):
     return self.forum_extended_until or self.forum_ends_at
 
+  def delete_mixes(self, dry=True):
+    for mix in self.mixes.filter():
+      if not dry:
+        self.logger.info("Removing mix file %s", self.zeus_proofs_path())
+        safe_unlink(mix.mix_path)
+        mix.delete()
+      else:
+        print "Delete file %s" % mix.mix_path
+
+  def delete_proofs(self, dry=True):
+    if not dry:  
+      self.logger.info("Removing proofs file %s", self.zeus_proofs_path())
+      safe_unlink(self.zeus_proofs_path())
+    else:
+      print "Delete file %s" % self.zeus_proofs_path()
+  
+  def delete_results(self, dry=True):
+      mod = self.election.get_module()
+      p = mod.get_election_result_file_path('*', '*')
+      p = p[:-2] + '*'
+      import glob
+      results = glob.glob(p)
+      for r in results:
+          assert self.election.short_name in r
+      for r in results:
+          if not dry:
+              self.logger.info("Removing result file %s", r)
+              safe_unlink(r)
+          else:
+              print "Delete result file %s" % r
 
 
 class ElectionLog(models.Model):
