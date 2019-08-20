@@ -4077,7 +4077,8 @@ class ZeusCoreElection(object):
             #print "CIPHERS", ciphers
             print "FACTORS", factors
             print "PK", trustee_public
-            m = "Invalid trustee factor proof!"
+            factors = repr(factors)[:40]
+            m = "Invalid trustee factor proof ({})!".format(factors)
             raise ZeusError(m)
 
         return 1
