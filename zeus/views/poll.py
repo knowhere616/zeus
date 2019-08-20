@@ -933,7 +933,7 @@ def download_signature_short(request, fingerprint):
 @auth.election_view(check_access=False)
 @require_http_methods(["GET"])
 def download_signature(request, election, poll, fingerprint):
-    vote = CastVote.objects.get(voter__poll=poll, fingerprint=fingerprint)
+    vote = get_object_or_404(CastVote, voter__poll=poll, fingerprint=fingerprint)
     response = HttpResponse(content_type='application/binary')
     response['Content-Dispotition'] = 'attachment; filename=signature.txt'
     response.write(vote.signature['signature'])
