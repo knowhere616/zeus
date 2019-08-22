@@ -610,7 +610,7 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
         return self.get_zeus_trustee() != None
 
     @transaction.atomic
-    def update_trustees(self, trustees):
+    def update_trustees(self, trustees, notify=True):
         for name, email in trustees:
             trustee, created = self.trustees.get_or_create(email=email)
             if created:
@@ -628,7 +628,8 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
                     self.logger.info("Trustee %r deleted", trustee.email)
                     self.zeus.compute_election_public()
                     self.logger.info("Public key updated")
-        self.auto_notify_trustees()
+        if notify:
+            self.auto_notify_trustees()
 
     def auto_notify_trustees(self, force=False):
         for trustee in self.trustees.exclude(secret_key__isnull=False):
