@@ -174,9 +174,9 @@ class ZeusDjangoElection(ZeusCoreElection):
 
     def do_get_votes(self):
         votes = {}
-        casted = self._casted_votes()
+        cast = self._cast_votes()
         audited = self._audit_votes()
-        votes.update(casted)
+        votes.update(cast)
         votes.update(audited)
         return votes
 
@@ -207,7 +207,7 @@ class ZeusDjangoElection(ZeusCoreElection):
 
         return votes
 
-    def _casted_votes(self):
+    def _cast_votes(self):
         votes = {}
         for vote in self.poll.cast_votes.filter(verified_at__isnull=False):
             zeus_vote = self._get_zeus_vote(vote.vote, voter=vote.voter)
