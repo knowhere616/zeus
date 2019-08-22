@@ -2063,6 +2063,10 @@ class Voter(HeliosModel, VoterFeatures):
       return "%d-%s" % (self.poll.pk, decalize(str(self.voter_password)))
 
   @property
+  def voted_nodb(self):
+      return bool(self.vote_hash)
+
+  @property
   def voted(self):
       return self.cast_votes.count() > 0
 
@@ -2292,6 +2296,8 @@ class Voter(HeliosModel, VoterFeatures):
 
   @property
   def can_delete(self):
+      if self.vote_hash:
+          return False
       return not self.voted_linked and not self.participated_in_forum_linked
 
   @property

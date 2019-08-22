@@ -154,7 +154,7 @@
     {% endif %}
     {% if user.is_manager or 'cast_votes__id' in voter_table_headers %}
     <td>
-      {% if voter.voted %}
+      {% if voter.voted_nodb %}
       {% trans "YES" %} 
       {% else %}
       {% trans "NO" %}
@@ -205,7 +205,7 @@
             {% menu_action label email_url "mail" %}
         {% endif %}
 
-        {% if not voter.voted_linked and not voter.participated_in_forum_linked and poll.feature_can_delete_voter %}
+        {% if voter.can_delete and poll.feature_can_delete_voter %}
             {% url "election_poll_voter_delete" election.uuid poll.uuid voter.uuid as delete_url %}
             {% trans "Delete voter" as label %}
             {% menu_confirm_action label delete_url voter_remove_confirm "remove" "POST" "alert"%}
