@@ -8,7 +8,7 @@ import logging
 from functools import wraps
 from celery.decorators import task as celery_task
 
-from helios.models import Election, Voter, Poll
+from helios.models import Election, Voter, Poll, VoterFile
 from zeus_forum.models import Post, ForumUpdatesRegistration
 from helios.view_utils import render_template_raw
 
@@ -419,3 +419,26 @@ def periodic_forum_notifications(hours=24):
     logger.info("Periodic forum notifications for polls %r" % poll_ids)
     for poll_id in poll_ids:
         forum_notify_poll_periodic.delay(poll_id, hours)
+
+
+def update_status(pk, num):
+    from helios.models import VoterFile
+    f = VoterFile.objects.get(pk=pk)
+    f.num_voters = num
+    f.save()
+
+@task(bind=True, ignore_result=True)
+def process_voter_file(task, pk):
+    upload = VoterFile.objects.get(pk=pk)
+    upload.poll.logger.info("Process voter file: %r", upload.pk)
+
+    def report(pk, num):
+        # hacky way to enforce db commit from outside the atomic transaction
+        # spawning a separate celery task won't work as celery will queue 
+        # spawns after the commit of the underlying transaction.
+        from multiprocessing.dummy import Process
+        p = Process(target=update_status, args=(pk, num))
+        p.start()
+        p.join()
+
+    upload.do_process(report=report)

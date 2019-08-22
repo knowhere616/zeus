@@ -1313,12 +1313,13 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
   def encrypted_tally_hash(self):
     return self.workflow.tally_hash(self)
 
-  def add_voters_file(self, uploaded_file):
+  def add_voters_file(self, uploaded_file, encoding):
     """
     expects a django uploaded_file data structure, which has filename, content,
     size...
     """
     new_voter_file = VoterFile(poll=self,
+                               preferred_encoding=encoding,
                                voter_file_content=\
                                base64.encodestring(uploaded_file.read()))
     new_voter_file.save()
@@ -1584,6 +1585,14 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
           else:
               print "Delete result file %s" % r
 
+  def voter_file_processing(self):
+    uploads = VoterFile.objects.filter(poll=self)
+    if uploads.count():
+        upload = uploads[0]
+        if upload.processing_started_at and not upload.processing_finished_at:
+            return upload
+    return None
+
 
 class ElectionLog(models.Model):
   """
@@ -1599,10 +1608,14 @@ class ElectionLog(models.Model):
   at = models.DateTimeField(auto_now_add=True)
 
 
-def iter_voter_data(voter_data, email_validator=validate_email,
-                    preferred_encoding=None):
+def get_voter_reader(voter_data, preferred_encoding=None):
     reader = CSVReader(voter_data, min_fields=2, max_fields=7,
                        preferred_encoding=preferred_encoding)
+    return reader
+
+def iter_voter_data(voter_data, email_validator=validate_email,
+                    preferred_encoding=None):
+    reader = get_voter_reader(voter_data, preferred_encoding)
 
     line = 0
     for voter_fields in reader:
@@ -1703,29 +1716,121 @@ class VoterFile(models.Model):
 
   uploaded_at = models.DateTimeField(auto_now_add=True)
   processing_started_at = models.DateTimeField(auto_now_add=False, null=True)
+  is_processing = models.BooleanField(default=False)
   processing_finished_at = models.DateTimeField(auto_now_add=False, null=True)
   num_voters = models.IntegerField(null=True)
+  process_error = models.TextField(null=True, default=None)
+  process_status = models.TextField(null=True, default=None)
+  preferred_encoding = models.CharField(max_length=255, default='utf8')
+
+
+  @property
+  def status(self):
+      status = _("Pending")
+      if self.processing_started_at:
+          if self.num_voters:
+              status = _("Processing (%d processed)...") % self.num_voters
+          else:
+              status = _("Processing...")
+      if self.processing_finished_at:
+          status = _("Completed (%d voters processed).") % self.num_voters
+      if self.process_error:
+          status = _("Something went wrong")
+      return status
+
+
+
+  @classmethod
+  def upload_is_processing(cls, poll):
+      return cls.objects.filter(poll=poll, is_processing=True).order_by('-pk')
+
+  @classmethod
+  def last_error_message(cls, poll):
+      last = cls.objects.filter(poll=poll, is_processing=False).order_by('-pk')
+      if last.count() and last[0].process_error:
+          return last[0].process_error
 
   def itervoters(self, email_validator=validate_email, preferred_encoding=None):
     voter_data = base64.decodestring(self.voter_file_content)
 
+    preferred_encoding = preferred_encoding or self.preferred_encoding
     return iter_voter_data(voter_data, email_validator=email_validator,
                            preferred_encoding=preferred_encoding)
 
-  def validate_voter_entry(self, voter):
+  def validate_voter_entry(self, voter, line=None):
       if not any([voter['email'], voter['mobile']]):
           msg = _("Voter [%s]: Provide at least one of the email and mobile fields." \
                   % voter['voter_id'])
-          raise ValidationError(msg)
+          err = ValidationError(msg)
+          setattr(err, 'line', line)
+          raise err
 
       if voter['mobile'] and not self.poll.sms_enabled:
           msg = _("Mobile backend is not set for this election")
-          raise ValidationError(msg)
+          err = ValidationError(msg)
+          setattr(err, 'line', line)
+          raise err
+
+      try:
+          django_validate_email(voter['email'])
+      except ValidationError, e:
+          err = ValidationError(msg)
+          err.message(_("Invalid email address", voter['email']))
+          setattr(err, 'line', line)
+          raise err
+
+
+  def validate_process(self):
+      demo_voters = 0
+      poll = self.poll
+      demo_user = False
+      for user in poll.election.admins.all():
+          if user.user_id.startswith('demo_'):
+              demo_user = True
+
+      nr = sum(e.voters.count() for e in user.elections.all())
+      demo_voters += nr
+      if demo_voters >= settings.DEMO_MAX_VOTERS and demo_user:
+          raise exceptions.VoterLimitReached("No more voters for demo account")
+
+
+  def end_process(self, error=None):
+      self.process_error = error
+      self.is_processing = False
+      self.processing_finished_at = datetime.datetime.utcnow()
+      self.save()
+
+  def do_process(self, *args, **kwargs):
+      self.processing_started_at = datetime.datetime.utcnow()
+      self.is_processing = True
+      self.save()
+      error = None
+      num_voters = 0
+      try:
+          num_voters = self.process(*args, **kwargs)
+      except (exceptions.VoterLimitReached, \
+        exceptions.DuplicateVoterID, ValidationError) as e:
+            line = None
+            if hasattr(e, 'line'):
+                line = e.line
+            error = e.message
+            if line:
+                error = u"%d: %s" % (line, unicode(error))
+      self.num_voters = 0 if error else num_voters
+      if error:
+          logged_error = error
+          try:
+            logged_error = unicode(error)
+          except:
+             pass
+          self.poll.logger.error("Failed to process voter file: %r. Error was: %s", self.pk, logged_error)
+      self.end_process(error)
 
   @transaction.atomic
-  def process(self, linked=True, check_dupes=True, preferred_encoding=None):
+  def process(self, linked=True, check_dupes=True, preferred_encoding=None, report=None):
+    preferred_encoding = preferred_encoding or self.preferred_encoding
     demo_voters = 0
-    poll = self.poll
+    poll = Poll.objects.get(pk=self.poll.pk)
     demo_user = False
     for user in poll.election.admins.all():
         if user.user_id.startswith('demo_'):
@@ -1733,16 +1838,18 @@ class VoterFile(models.Model):
 
     nr = sum(e.voters.count() for e in user.elections.all())
     demo_voters += nr
-    if demo_voters >= settings.DEMO_MAX_VOTERS and demo_user:
-        raise exceptions.VoterLimitReached("No more voters for demo account")
-
-    self.processing_started_at = datetime.datetime.utcnow()
-    self.save()
 
     # now we're looking straight at the content
     voter_data = base64.decodestring(self.voter_file_content)
 
-    reader = iter_voter_data(voter_data, preferred_encoding=preferred_encoding)
+    def email_validator(email, ln):
+        try:
+            django_validate_email(email)
+        except ValidationError, e:
+            err = ValidationError(e.message)
+            setattr(err, 'line', ln)
+            raise err
+    reader = iter_voter_data(voter_data, email_validator=email_validator, preferred_encoding=preferred_encoding)
 
     last_alias_num = poll.last_alias_num
 
@@ -1758,15 +1865,23 @@ class VoterFile(models.Model):
       mobile = voter.get('mobile', '')
       weight = voter.get('weight', 1)
 
-      self.validate_voter_entry(voter)
+      interval = getattr(settings, 'VOTER_FILE_REPORT_COUNT', 30)
+      if (num_voters % interval) == 0:
+          if report:
+              report(self.pk, num_voters)
+
+      self.validate_voter_entry(voter, num_voters)
 
       voter = None
       try:
+          voter = Voter.objects.get(poll=poll, voter_login_id=voter_id)
           if check_dupes:
-            voter = Voter.objects.get(poll=poll, voter_login_id=voter_id)
             m = _("Duplicate voter id"
-                    " : %s"%voter_id)
+                    " : %s" % voter_id)
             raise exceptions.DuplicateVoterID(m)
+          else:
+            if not voter.can_update:
+                raise ValidationError(_("Permission denied to update entry: %s") % voter_id)
       except Voter.DoesNotExist:
           pass
       # create the voter
@@ -1807,10 +1922,6 @@ class VoterFile(models.Model):
         for i, voter in enumerate(new_voters):
             voter.alias = 'V%s' % voter_alias_integers[i]
             voter.save()
-
-    self.num_voters = num_voters
-    self.processing_finished_at = datetime.datetime.utcnow()
-    self.save()
 
     return num_voters
 
@@ -2179,6 +2290,13 @@ class Voter(HeliosModel, VoterFeatures):
   def has_active_forum_updates_registration(self):
       return self.forumupdatesregistration_set.filter(active=True).count() > 0
 
+  @property
+  def can_delete(self):
+      return not self.voted_linked and not self.participated_in_forum_linked
+
+  @property
+  def can_update(self):
+      return self.can_delete
 
 class CastVoteQuerySet(QuerySet):
 

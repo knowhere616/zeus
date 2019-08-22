@@ -1,0 +1,34 @@
+{% extends "election_page.html" %}
+{% load i18n %}
+
+{% block meta_block %}
+  {{ block.super }}
+  <meta http-equiv="refresh" content="2">
+{% endblock %}
+{% block title %}{{election.name}}: {% trans "Voters" %}{% endblock %}
+
+{% block tabs_menu %}
+{% include "_election_view_menu.html" %}
+{% endblock %}
+
+{% block content %}
+<h5>{% trans "Voters import" %} #{{ upload_id }}</h5>
+<div>
+  <code id="processing" class="reset" style="background-color: transparent; color: #555;">
+  <span style="font-size: 1.6rem;{% if upload.process_error %}color: red{% endif %}">{{ upload.status }}<br /><br /></span>
+  {% if upload.process_status %}
+  {{ upload.process_status }}
+  {% endif %}
+
+  {% if upload.process_error %}
+  {{ upload.process_error }}
+  {% endif %}
+  </code>
+</div>
+
+<div style="margin-top: 20px; border-top: 1px solid #efefef; padding-top: 10px;">
+<a href="{% url "election_poll_voters" election.uuid poll.uuid %}" class="button primary">{% trans "Manage voters" %}</a>
+<a href="{% url "election_poll_voters_upload" election.uuid poll.uuid %}" class="button primary">{% trans "Import voters" %}</a>
+</div>
+{% endblock %}
+

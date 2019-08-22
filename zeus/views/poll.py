@@ -16,7 +16,6 @@ from django.db.models.query import QuerySet
 from django.db.models import Q, Max
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
-from django.core.validators import validate_email
 from django.utils.html import mark_safe, escape
 from django.shortcuts import redirect
 from django import forms
@@ -243,7 +242,7 @@ def voters_clear(request, election, poll):
             voters = election.get_module().filter_voters(voters, q_param, request)
 
         for voter in voters:
-            if voter.voted_linked or voter.participated_in_forum_linked:
+            if not voter.can_delete:
                 raise PermissionDenied('36')
             if not voter.cast_votes.count():
                 voter.delete()
@@ -261,12 +260,16 @@ ENCODINGS = [('utf-8', _('Unicode')),
 @auth.requires_poll_features('can_add_voter')
 @require_http_methods(["POST", "GET"])
 def voters_upload(request, election, poll):
+    upload = poll.voter_file_processing()
     common_context = {
         'election': election,
         'poll': poll,
-        'encodings': ENCODINGS
+        'encodings': ENCODINGS,
+        'running_file': upload
     }
 
+    if upload:
+        messages.warning(request, _("A voters import is already in progress."))
     set_menu('voters', common_context)
     if request.method == "POST":
         preferred_encoding = request.POST.get('encoding', None)
@@ -277,97 +280,29 @@ def voters_upload(request, election, poll):
         else:
             common_context['preferred_encoding'] = preferred_encoding
 
-        if bool(request.POST.get('confirm_p', 0)):
-            # launch the background task to parse that file
-            voter_file_id = request.session.get('voter_file_id', None)
-            if not voter_file_id:
-                messages.error(request, _("Invalid voter file id"))
-                url = poll_reverse(poll, 'voters')
-                return HttpResponseRedirect(url)
-            try:
-                voter_file = VoterFile.objects.get(pk=voter_file_id)
-                poll.logger.info("Processing voters upload (linked=%r)", poll.is_linked_root)
-                try:
-                    voter_file.process(True,
-                                       preferred_encoding=preferred_encoding)
-                except (exceptions.VoterLimitReached, \
-                    exceptions.DuplicateVoterID, ValidationError) as e:
-                    messages.error(request, e.message)
-                    voter_file.delete()
-                    url = poll_reverse(poll, 'voters')
-                    return HttpResponseRedirect(url)
-
-            except VoterFile.DoesNotExist:
-                pass
-            except KeyError:
-                pass
-            if 'no_link' in request.session:
-                del request.session['no_link']
-            if 'voter_file_id' in request.session:
-                del request.session['voter_file_id']
-            url = poll_reverse(poll, 'voters')
-            return HttpResponseRedirect(url)
+        if request.FILES.has_key('voters_file'):
+            voters_file = request.FILES['voters_file']
+            voter_file_obj = poll.add_voters_file(voters_file, encoding=preferred_encoding)
         else:
-            if 'voter_file_id' in request.session:
-                del request.session['voter_file_id']
-            # we need to confirm
-            voters = []
-            error = None
-            invalid_emails = []
+            error = _("No file uploaded")
+            messages.error(request, error)
+            url = poll_reverse(poll, 'voters_upload')
+            return HttpResponseRedirect(url)
+        
+        
+        try:
+            voter_file_obj.validate_process()
+        except (exceptions.VoterLimitReached, \
+            exceptions.DuplicateVoterID, ValidationError) as e:
+            messages.error(request, e.message)
+            voter_file_obj.delete()
+            url = poll_reverse(poll, 'voters_upload')
+            return HttpResponseRedirect(url)
 
-            def _email_validate(eml, line):
-                try:
-                    validate_email(eml)
-                except ValidationError:
-                    invalid_emails.append((eml, line))
-                return True
-
-            if request.FILES.has_key('voters_file'):
-                voters_file = request.FILES['voters_file']
-                voter_file_obj = poll.add_voters_file(voters_file)
-
-                # import the first few lines to check
-                invalid_emails = []
-                try:
-                    voters = [v for v in voter_file_obj.itervoters(
-                                            email_validator=_email_validate,
-                    preferred_encoding=preferred_encoding)]
-                except ValidationError, e:
-                    if hasattr(e, 'messages') and e.messages:
-                        error = "".join(e.messages)
-                    else:
-                        error = "error."
-                except Exception, e:
-                    voter_file_obj.delete()
-                    error = str(e)
-                    if 'voter_file_id' in request.session:
-                        del request.session['voter_file_id']
-                    messages.error(request, error)
-                    url = poll_reverse(poll, 'voters_upload')
-                    return HttpResponseRedirect(url)
-
-                if len(invalid_emails):
-                    error = _("Enter a valid email address. "
-                              "<br />")
-                    for email, line in invalid_emails:
-                        error += "<br />" + "line %d: %s " % (line,
-                            escape(email))
-
-                    error = mark_safe(error)
-            else:
-                error = _("No file uploaded")
-            if not error:
-                request.session['voter_file_id'] = voter_file_obj.id
-            count = len(voters)
-            context = common_context
-            context.update({
-                'voters': voters,
-                'count': count,
-                'error': error
-            })
-            return render_template(request,
-                                   'election_poll_voters_upload_confirm',
-                                   context)
+        poll.logger.info("Submitting voter file: %r", voter_file_obj.pk)
+        tasks.process_voter_file.delay(voter_file_obj.pk)
+        url = poll_reverse(poll, 'voters_upload_status', pk=voter_file_obj.pk)
+        return HttpResponseRedirect(url)
     else:
         if 'voter_file_id' in request.session:
             del request.session['voter_file_id']
@@ -376,6 +311,32 @@ def voters_upload(request, election, poll):
         return render_template(request,
                                'election_poll_voters_upload',
                                common_context)
+
+
+@auth.election_admin_required
+def voters_upload_status(request, election, poll, pk):
+    if pk == 'last':
+        try:
+            upload = VoterFile.objects.filter(poll=poll).order_by('-pk')[0]
+            pk = upload.pk
+        except IndexError:
+            raise PermissionDenied('No voter file exists.')
+    else:
+        upload = get_object_or_404(VoterFile, poll=poll, pk=pk)
+    ids = VoterFile.objects.filter(poll=poll).order_by('pk').values_list('id', flat=True)
+    context = {
+        'upload_id': type([])(ids).index(int(upload.pk)) + 1,
+        'upload': upload,
+        'election': election,
+        'poll': poll
+    }
+    set_menu('voters', context)
+    if upload.processing_finished_at and not upload.process_error:
+        url = poll_reverse(poll, 'voters')
+        return HttpResponseRedirect(url)
+    return render_template(request,
+                           'election_poll_voters_upload_status',
+                           context)
 
 
 @auth.election_admin_required
