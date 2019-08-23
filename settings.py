@@ -338,6 +338,9 @@ ZEUS_USER_GUIDES = (
 )
 
 ZEUS_SHIBBOLETH_PROFILES = {}
+
+ZEUS_DEFER_VALIDATE_MIXING_LIMIT = 2000
+
 # useful trick for custom settings
 try:
     from local_settings import *

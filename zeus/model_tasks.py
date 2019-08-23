@@ -280,12 +280,9 @@ class PollTasks(TaskModel):
     @poll_task('validate_mixing', ('mix_finished',))
     def validate_mixing(self):
         ciphers = self.zeus.get_mixed_ballots()
-        tally_dict = {'num_tallied': len(ciphers), 'tally': [
-          [{'alpha':c[0], 'beta':c[1]} for c in ciphers]]}
-        tally = datatypes.LDObject.fromDict(tally_dict,
-                                            type_hint='phoebus/Tally')
-        self.encrypted_tally = tally
-        self.save()
+        if len(ciphers) > getattr(settings, 'ZEUS_DEFER_VALIDATE_MIXING_LIMIT', 2000):
+            self.logger.info("Deferring mixing validation (ciphers count: %r)", len(ciphers))
+            return True
         self.zeus.validate_mixing()
 
     @poll_task('validate_voting', ('closed',))
