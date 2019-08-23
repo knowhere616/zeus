@@ -206,7 +206,7 @@ def json_data(request, election, trustee):
             data['encrypted_tally'] = None
         else:
             if include_tally:
-                data['encrypted_tally'] = poll.encrypted_tally.toJSONDict()
+                data['encrypted_tally'] = poll.mixed_ballots
             else:
                 data['encrypted_tally'] = 'tally_excluded'
         polls_data.append(data)

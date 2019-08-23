@@ -1305,10 +1305,6 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
   def tallied(self):
     return self.mixing_finished
 
-  @property
-  def encrypted_tally_hash(self):
-    return self.workflow.tally_hash(self)
-
   def add_voters_file(self, uploaded_file, encoding):
     """
     expects a django uploaded_file data structure, which has filename, content,
@@ -1588,6 +1584,22 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
         if upload.processing_started_at and not upload.processing_finished_at:
             return upload
     return None
+
+  @property
+  def mixed_ballots_json_dict(self):
+      ciphers = self.zeus.get_mixed_ballots()
+      return {
+          'num_tallied': len(ciphers),
+          'tally': [[{'alpha':str(c[0]), 'beta':str(c[1])} for c in ciphers]]
+      }
+
+  @property
+  def mixed_ballots(self):
+      ciphers = self.zeus.get_mixed_ballots()
+      return {
+          'num_tallied': len(ciphers),
+          'tally': [[{'alpha':c[0], 'beta':c[1]} for c in ciphers]]
+      }
 
 
 class ElectionLog(models.Model):

@@ -969,7 +969,7 @@ def get_tally(request, election, poll):
         raise PermissionDenied('40')
 
     params = poll.get_booth_dict()
-    tally = poll.encrypted_tally.toJSONDict()
+    tally = poll.mixed_ballots_json_dict
 
     return HttpResponse(json.dumps({
         'poll': params,

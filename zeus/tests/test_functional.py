@@ -549,7 +549,7 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
                 p = Poll.objects.get(uuid=p_uuid)
                 decryption_factors = [[]]
                 decryption_proofs = [[]]
-                for vote in p.encrypted_tally.tally[0]:
+                for vote in p.mixed_ballots['tally'][0]:
                     dec_factor, proof = sk.decryption_factor_and_proof(vote)
                     decryption_factors[0].append(dec_factor)
                     decryption_proofs[0].append({
