@@ -354,6 +354,7 @@ class ZeusDjangoElection(ZeusCoreElection):
         pk = get_datatype('EGPublicKey', p=p, g=g, q=q, y=public).wrapped_obj
         election = self.election
         election.public_key = pk
+        election.logger.info("Election public key updated.")
         election.save()
 
     def do_get_election_public(self):
