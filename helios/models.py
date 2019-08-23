@@ -619,7 +619,7 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
             trustee.name = name
             trustee.save()
 
-        if self.trustees.count() != len(trustees):
+        if self.trustees.filter().no_secret().count() != len(trustees):
             emails = map(lambda t:t[1], trustees)
             for trustee in self.trustees.filter().no_secret():
                 if not trustee.email in emails:
@@ -1258,10 +1258,6 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
   @property
   def voters_count(self):
     return self.voters.count()
-
-  @property
-  def trustees_count(self):
-    return self.trustees.filter(secret_key__isnull=True).count()
 
   @property
   def last_alias_num(self):
