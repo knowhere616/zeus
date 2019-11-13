@@ -18,7 +18,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.platypus import Spacer, Image, PageBreak
+from reportlab.platypus import Spacer, Image, PageBreak, KeepTogether
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
@@ -240,6 +240,8 @@ def make_totals(elements, styles, total_votes, blank_votes):
     elements.append(Spacer(1, 12))
 
 def make_party_list_heading(elements, styles, party, count):
+    if len(party) > 500:
+        party = party[:500] + "..."
     heading = escape(party).replace("\n", "<br />")
     count = str(count)
 
@@ -514,14 +516,14 @@ def build_doc(title, name, institution_name, voting_start, voting_end,
 
             if new_page:
                 elements.append(PageBreak())
-            elements.append(Spacer(1, 12))
-            elements.append(Spacer(1, 12))
-            elements.append(Spacer(1, 12))
+            elements.append(KeepTogether(Spacer(1, 12)))
+            elements.append(KeepTogether(Spacer(1, 12)))
+            elements.append(KeepTogether(Spacer(1, 12)))
             make_subheading(elements, styles, poll_intro_contents)
-            elements.append(Spacer(1, 12))
+            elements.append(KeepTogether(Spacer(1, 12)))
             make_intro(elements, styles, intro_contents)
             make_poll_voters(elements, styles, poll_voters)
-            elements.append(Spacer(1, 12))
+            elements.append(KeepTogether(Spacer(1, 12)))
             make_results(elements, styles, total_votes, blank_votes,
                          parties_results, candidates_results)
 
