@@ -1817,11 +1817,14 @@ class VoterFile(models.Model):
       try:
           num_voters = self.process(*args, **kwargs)
       except (exceptions.VoterLimitReached, \
-        exceptions.DuplicateVoterID, ValidationError) as e:
+        exceptions.DuplicateVoterID, ValidationError, ValueError, Exception) as e:
             line = None
-            if hasattr(e, 'line'):
+            if e and hasattr(e, 'line'):
                 line = e.line
-            error = e.message
+            error = e and e.message
+            if not error and hasattr(e, 'm'):
+                error = e.m
+            error = error or "Something went wrong"
             if line:
                 error = u"%d: %s" % (line, unicode(error))
       self.num_voters = 0 if error else num_voters
