@@ -607,7 +607,8 @@ class StvForm(QuestionBaseForm):
             raise forms.ValidationError(INVALID_CHAR_MSG % "%")
         if not answer_lst[0]:
             message = _("This field is required.")
-            self._errors[field_key] = ErrorList([message])
+            self._errors['answer_0'] = ErrorList([message])
+            return None, json.dumps([])
         answer_lst[0] = answer_lst[0].strip()
         return answer_lst[0], json.dumps(answer_lst)
 
