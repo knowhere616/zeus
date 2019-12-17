@@ -1540,6 +1540,8 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
       while es.filter(short_name=self.short_name).count() > 0:
         self.short_name = slughifi(self.name)[:100] + '-%d' % count
         count += 1
+    if not self.linked_ref:
+        self.linked_ref = None
     super(Poll, self).save(*args, **kwargs)
 
   @property

@@ -498,6 +498,8 @@ def voters_email(request, election, poll=None, voter_uuid=None):
                 voter_constraints_include = {'vote_hash': None}
 
             for _poll in polls:
+                if _poll is None:
+                    continue
                 if not _poll.feature_can_send_voter_mail:
                     continue
 
