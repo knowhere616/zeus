@@ -1004,12 +1004,6 @@ msgstr "Încărcărea în bloc de alegători"
 msgid "Error in reading file."
 msgstr "Eroare în citirea fișierului."
 
-msgid "There were"
-msgstr "S-au citit"
-
-msgid "entries read from the uploaded file."
-msgstr "intrări în fișierul încărcat."
-
 msgid "Registration ID"
 msgstr "Identificator alegător"
 

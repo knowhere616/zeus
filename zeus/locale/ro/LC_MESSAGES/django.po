@@ -735,12 +735,6 @@ msgstr "Latină (iso-8859-1)"
 msgid "Invalid encoding"
 msgstr "Encodare invalidă"
 
-msgid "Invalid voter file id"
-msgstr "Identificator de fișier cu alegători invalid"
-
-msgid "Enter a valid email address. <br />"
-msgstr "Introdu o adresă de email validă. <br />"
-
 msgid "No file uploaded"
 msgstr "Niciun fișier nu a fost uploadat"
 

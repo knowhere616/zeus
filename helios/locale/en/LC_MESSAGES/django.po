@@ -33,3 +33,22 @@ msgstr ""
 
 msgid "Voter login redirect"
 msgstr "Redirecting..."
+
+msgid "EMAIL_DISCLAIMER_TITLE"
+msgstr "Disclaimer"
+
+#, python-format
+msgid "EMAIL_DISCLAIMER %(site)s"
+msgstr ""
+"“Zeus Digital Voting” is an e-voting service for organising and carrying out\n"
+"secure, anonymous, elections with purely electronic means.\n"
+"All preparations, ballot casting, election procedures, and results tabulation are under the \n"
+"control and the responsibility of the election organisers. The Zeus service \n"
+"manages only the underlying system and has absolutely no responsibility for \n"
+"the way en election is organised, the use of the election results, the \n"
+"objective of the election, or for any processing of personal data that may be \n"
+"carried out by the election organisers. The election organisers and the \n"
+"election administrator hold the sole and complete responsibility for all the \n"
+"above."
+"\n"
+"%(site)s"

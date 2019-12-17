@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-29 17:52+0200\n"
+"POT-Creation-Date: 2019-12-17 16:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -290,6 +290,24 @@ msgstr "Tο βάρος ψήφου πρέπει να είναι θετικός α
 msgid "Invalid voter data at line %s"
 msgstr "Λανθασμένα στοιχεία ψηφοφόρου στην γραμμή %s"
 
+msgid "Pending"
+msgstr "Σε αναμονή"
+
+#, python-format
+msgid "Processing (%d processed)..."
+msgstr "Σε επεξεργασία (%d ολοκληρωμένα)"
+
+msgid "Processing..."
+msgstr "Σε επεξεργασία..."
+
+#, python-format
+msgid "Completed (%d voters processed)."
+msgstr "Ολοκληρώθηκε (%d ψηφοφόροι)"
+
+msgid "Something went wrong"
+msgstr ""
+"Προέκυψε σφάλμα"
+
 #, python-format
 msgid "Voter [%s]: Provide at least one of the email and mobile fields."
 msgstr ""
@@ -299,9 +317,16 @@ msgstr ""
 msgid "Mobile backend is not set for this election"
 msgstr "Η δυνατότητα αποστολής SMS είναι απενεργοποιημένη"
 
+msgid "Invalid email address"
+msgstr "Μη έγκυρη διεύθυνση email"
+
 #, python-format
 msgid "Duplicate voter id : %s"
 msgstr "Διπλότυπο αναγνωριστικό χρήστη %s"
+
+#, python-format
+msgid "Permission denied to update entry: %s"
+msgstr "Δεν έχετε δικαίωμα επεξεργασίας: %s"
 
 msgid "No email set"
 msgstr "Δεν έχει οριστεί διεύθυνση ηλεκτρονικού ταχυδρομείου"
@@ -1067,55 +1092,11 @@ msgstr "Μπορείτε να"
 msgid "review the voter list"
 msgstr "επισκοπήσετε τη λίστα των ψηφοφόρων"
 
-msgid "Bulk upload voters"
-msgstr "Μαζική εγγραφή ψηφοφόρων"
+msgid "Voters import"
+msgstr "Εισαγωγή ψηφοφόρων"
 
-msgid "Error in reading file."
-msgstr "Σφάλμα στην ανάγνωση του αρχείου."
-
-msgid "There were"
-msgstr "Ανακτήθηκαν"
-
-msgid "entries read from the uploaded file."
-msgstr "καταχωρίσεις από το αρχείο."
-
-msgid "Registration ID"
-msgstr "Αριθμός Καταχώρισης"
-
-msgid "Email"
-msgstr "Email"
-
-msgid "Given name"
-msgstr "Όνομα"
-
-msgid "Surname"
-msgstr "Επώνυμο"
-
-msgid "Middle or other name"
-msgstr "Πατρώνυμο ή άλλος τίτλος"
-
-msgid "Mobile phone"
-msgstr "Κινητό τηλ."
-
-msgid "Vote weight"
-msgstr "Βάρος ψήφου"
-
-msgid "Show all voters"
-msgstr "Προβολή ολόκληρης της λίστας"
-
-msgid ""
-"The voters above will be enrolled. Note that you can also review and\n"
-"  edit the complete voter list from the control panel."
-msgstr ""
-"Θα εγγραφούν οι παραπάνω ψηφοφόροι. Σημείωση: μπορείτε να δείτε και να "
-"τροποποιήσετε\n"
-"  τη συνολική λίστα των ψηφοφόρων από τον πίνακα ελέγχου."
-
-msgid "Confirm voters"
-msgstr "Επιβεβαίωση ψηφοφόρων"
-
-msgid "Cancel voter enrollment"
-msgstr "Ακύρωση εγγραφής ψηφοφόρων"
+msgid "Manage voters"
+msgstr "Διαχείριση ψηφοφόρων"
 
 msgid "Batch polls actions"
 msgstr "Μαζικές ενέργειες ψηφοφορίας"
@@ -1155,9 +1136,6 @@ msgstr "προβολή διαβούλευσης"
 
 msgid "forum disabled"
 msgstr "απενεργοποιημένη διαβούλευση"
-
-msgid "Manage voters"
-msgstr "Διαχείριση ψηφοφόρων"
 
 msgid "Delete poll"
 msgstr "Διαγραφή κάλπης"
@@ -1459,19 +1437,14 @@ msgid ""
 "\n"
 "If you need a normal account, or have any questions,\n"
 "please contact us at helpdesk@zeus.grnet.gr.\n"
-"\n"
-"--\n"
-"https://zeus.grnet.gr/\n"
-"Zeus Elections\n"
 msgstr ""
 "Οι δοκιμαστικοί λογαριασμοί καταργούνται περιοδικά.\n"
 "\n"
 "Εάν χρειάζεστε ένα κανονικό λογαριασμό, ή εάν έχετε ερωτήσεις,\n"
 "παρακαλούμε επικοινωνήστε μαζί μας στο helpdesk@zeus.grnet.gr.\n"
-"\n"
-"--\n"
-"https://zeus.grnet.gr/\n"
-"Ηλεκτρονικές Ψηφοφορίες «Ζευς»\n"
+
+msgid "Zeus Elections"
+msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
 
 msgid "Demo account for"
 msgstr "Δοκιμαστικός λογαριασμός"
@@ -1484,9 +1457,6 @@ msgstr "Αξιότιμε κύριε ή κυρία,"
 
 msgid "The ending date of the election has changed. New ending date is:"
 msgstr "Η ημερομηνία λήξης της ψηφοφορίας άλλαξε. Η νέα ημερομηνία είναι:"
-
-msgid "Zeus Elections"
-msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
 
 #, python-format
 msgid ""
@@ -1765,9 +1735,6 @@ msgid "please visit your control panel and follow the instructions"
 msgstr ""
 "παρακαλούμε επισκεφθείτε τον πίνακα ελέγχου και ακολουθήστε τις οδηγίες"
 
-msgid "Zeus Digital Elections"
-msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
-
 msgid "actions required, step"
 msgstr "απαιτούνται ενέργειές σας, βήμα"
 
@@ -1899,6 +1866,32 @@ msgid ""
 "    officials.\n"
 "    "
 msgstr ""
+
+msgid "Usage"
+msgstr "Στοιχεία χρήσης"
+
+msgid "EMAIL_DISCLAIMER_TITLE"
+msgstr "Γνωστοποίηση / Αποποίηση Ευθύνης"
+
+#, python-format
+msgid "EMAIL_DISCLAIMER %(site)s"
+msgstr ""
+"H «Ψηφιακή Κάλπη Ζευς» είναι ένα πληροφοριακό σύστημα για την αδιάβλητη διεξαγωγή απόρρητων ψηφοφοριών \n"
+"με αμιγώς ηλεκτρονικό τρόπο.\n"
+"Τόσο η προετοιμασία για τη διεξαγωγή της ψηφοφορίας όσο και η υποβολή\n"
+"της ψήφου από τους ψηφοφόρους και το σύνολο της διεξαγωγής και της εξαγωγής των αποτελεσμάτων\n"
+"πραγματοποιείται και τελεί υπό την ευθύνη της εκάστοτε διεξάγουσας αρχής.\n"
+"Η υπηρεσία Ζευς αναλαμβάνει μόνο τη διαχείριση του συστήματος και δεν φέρει ουδεμία ευθύνη\n"
+"για τον τρόπο οργάνωσης, τη χρήση των αποτελεσμάτων, και τον σκοπό της κάθε ψηφοφορίας,\n"
+"ούτε για την οποιαδήποτε μορφή επεξεργασίας δεδομένων προσωπικού χαρακτήρα\n"
+"από την πλευρά της διεξάγουσας αρχής.\n"
+"Για όλα τα παραπάνω αποκλειστικά υπεύθυνη είναι η εν λόγω διεξάγουσα αρχή\n"
+"και ο διαχειριστής της ψηφοφορίας.\n"
+""
+"Για οποιοδήποτε ερώτημά/αίτημά σας σχετικά με ζητήματα  προστασίας δεδομένων προσωπικού χαρακτήρα,\n"
+"απευθύνεστε στην εκάστοτε διεξάγουσα αρχή.\n"
+"Για θέματα σχετικά με τη λειτουργία της «Ψηφιακής Κάλπης Ζευς»,\n"
+"επισκεφθείτε την ιστοσελίδα της υπηρεσίας: %(site)s."
 
 msgid "Something went wrong !!!"
 msgstr ""
