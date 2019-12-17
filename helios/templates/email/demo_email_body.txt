@@ -12,8 +12,9 @@ password: {{ password }}
 
 If you need a normal account, or have any questions,
 please contact us at helpdesk@zeus.grnet.gr.
+{% endblocktrans %}
+
+{% include "zeus/email_disclaimer.html" %}
 
 --
-https://zeus.grnet.gr/
-Zeus Elections
-{% endblocktrans %}
+{% trans "Zeus Elections" %}

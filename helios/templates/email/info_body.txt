@@ -13,5 +13,7 @@
 {% trans "Voting link" %}: {{voter.get_quick_login_url}}
 {% endif %}
 
+{% include "zeus/email_disclaimer.html" %}
+
 --
 {% trans "Zeus Elections" %}

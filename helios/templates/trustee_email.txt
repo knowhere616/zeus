@@ -9,5 +9,7 @@
 
   {{ msg }}
 
+{% include "zeus/email_disclaimer.html" %}
+
 --
-{% trans "Zeus Digital Elections" %}
+{% trans "Zeus Elections" %}

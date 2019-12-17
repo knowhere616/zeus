@@ -1,0 +1,4 @@
+{% load i18n %}--
+{% blocktrans %}EMAIL_DISCLAIMER_TITLE{% endblocktrans %}
+
+{% blocktrans with site=SECURE_URL_HOST %}EMAIL_DISCLAIMER {{ site }}{% endblocktrans %}

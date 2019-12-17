@@ -9,3 +9,8 @@ as
 with registration ID: {{voter_login_id}}
 
 you can find your encrypted vote attached in this mail.{% endblocktrans %}
+
+{% include "zeus/email_disclaimer.html" %}
+
+--
+{% trans "Zeus Elections" %}

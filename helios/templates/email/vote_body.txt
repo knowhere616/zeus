@@ -57,5 +57,7 @@ Do not forward or show it to others. Do not reply to this.{% endblocktrans %}
 {% blocktrans %}If you are not the legitimate recipient, please delete this message
 and contact helpdesk@zeus.grnet.gr{% endblocktrans %}
 
+{% include "zeus/email_disclaimer.html" %}
+
 --
 {% trans "Zeus Elections" %}

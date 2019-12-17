@@ -11,4 +11,7 @@
 {{custom_message|safe}}
 {% endif %}
 
+{% include "zeus/email_disclaimer.html" %}
+
+--
 {% trans "Zeus Elections" %}
