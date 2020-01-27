@@ -15,7 +15,7 @@
 
 {% if poll %}
 <div class="columns six bottom left">
-<i>{% trans "Voters count" %}: </i><b>{{ poll.voters.count }}</b>
+<i>{% trans "Voters count" %}: </i><b>{{ poll.voters.count }}{% if poll.voter_weights_enabled %} ({% trans "Votes" %}: {{ poll.vote_weights_count }}){% endif %}</b>
 </div>
 <div class="columns six bottom left">
   <i>&nbsp;</i>
@@ -25,7 +25,7 @@
   <i>{% trans "Polls count" %}: </i><b>{{ election.polls.count }}</b>
 </div>
 <div class="columns six bottom right">
-  <i>{% trans "Voters count" %}: </i><b>{{ election.voters.filter.count }}</b>
+  <i>{% trans "Voters count" %}: </i><b>{{ election.voters.filter.count }}{% if election.voter_weights_enabled %} ({% trans "Votes" %}: {{ election.vote_weights_count }}){% endif %}</b>
 </div>
 {% endif %}
 </div>

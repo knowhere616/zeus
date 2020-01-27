@@ -1,7 +1,7 @@
 #!/bin/bash
 rsync -vrzcKl \
   --exclude-from sync.ignore \
-  -e "ssh" \
+  -e "ssh -4" \
   --rsync-path="sudo rsync" \
   --out-format="[%t]:%o:%f:Last Modified %M" \
   --no-perms \

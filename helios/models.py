@@ -568,6 +568,17 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
         return Voter.objects.filter(poll__election=self)
 
     @property
+    def voter_weights_enabled(self):
+        return self.voters.filter(voter_weight__gt=1).count()
+
+    @property
+    def vote_weights_count(self):
+        if self.voter_weights_enabled:
+            weights = self.voters.not_excluded().values_list('voter_weight', flat=True)
+            return reduce(lambda s, v: s + v, weights, 0)
+        return self.voters.count()
+
+    @property
     def audits(self):
         return AuditedBallot.objects.filter(poll__election=self)
 
@@ -1257,6 +1268,17 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
 
   @property
   def voters_count(self):
+    return self.voters.count()
+
+  @property
+  def voter_weights_enabled(self):
+    return self.voters.filter(voter_weight__gt=1).count()
+
+  @property
+  def vote_weights_count(self):
+    if self.voter_weights_enabled:
+        weights = self.voters.not_excluded().values_list('voter_weight', flat=True)
+        return reduce(lambda s, v: s + v, weights, 0)
     return self.voters.count()
 
   @property
