@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 16:22+0200\n"
+"POT-Creation-Date: 2020-01-27 11:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -305,8 +305,7 @@ msgid "Completed (%d voters processed)."
 msgstr "Ολοκληρώθηκε (%d ψηφοφόροι)"
 
 msgid "Something went wrong"
-msgstr ""
-"Προέκυψε σφάλμα"
+msgstr "Προέκυψε σφάλμα"
 
 #, python-format
 msgid "Voter [%s]: Provide at least one of the email and mobile fields."
@@ -517,6 +516,9 @@ msgstr "Ψηφοφόρο (φθιν.)"
 
 msgid "Voters count"
 msgstr "Αριθμός ψηφοφόρων"
+
+msgid "Votes"
+msgstr "Ψήφοι"
 
 msgid "Polls count"
 msgstr "Αριθμός καλπών"
@@ -1411,6 +1413,9 @@ msgstr ""
 "\n"
 "H απόδειξη της καταχώρισης βρίσκεται συνημμένη στο παρόν μήνυμα."
 
+msgid "Zeus Elections"
+msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
+
 msgid "Thank you for voting"
 msgstr "Ευχαριστούμε που ψηφίσατε"
 
@@ -1442,9 +1447,6 @@ msgstr ""
 "\n"
 "Εάν χρειάζεστε ένα κανονικό λογαριασμό, ή εάν έχετε ερωτήσεις,\n"
 "παρακαλούμε επικοινωνήστε μαζί μας στο helpdesk@zeus.grnet.gr.\n"
-
-msgid "Zeus Elections"
-msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
 
 msgid "Demo account for"
 msgstr "Δοκιμαστικός λογαριασμός"
