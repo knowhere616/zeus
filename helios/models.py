@@ -1277,7 +1277,7 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
   @property
   def vote_weights_count(self):
     if self.voter_weights_enabled:
-        weights = self.voters.not_excluded().values_list('voter_weight', flat=True)
+        weights = self.voters.filter().not_excluded().values_list('voter_weight', flat=True)
         return reduce(lambda s, v: s + v, weights, 0)
     return self.voters.count()
 
