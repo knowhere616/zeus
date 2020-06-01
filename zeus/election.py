@@ -328,6 +328,29 @@ class ZeusDjangoElection(ZeusCoreElection):
             if vote['status'] == V_PUBLIC_AUDIT:
                 self._do_store_public_audit(vote)
 
+    def do_get_normalized_candidates(self):
+        from zeus.core import PARTY_SEPARATOR
+        candidates = self.do_get_candidates()
+        questions = map(lambda q: q['question'], self.poll.questions_data)
+        if len(questions) == len(set(questions)):
+            return candidates 
+
+        qdata = self.poll.questions_data
+        index = 0
+        normalized = []
+        for i, q in enumerate(qdata):
+            answers_count = len(q['answers'])
+            candidate = candidates[index]
+            party = candidates[index].split(PARTY_SEPARATOR)[0]
+            newparty = party + '{%s}' % index
+            normalized.append(candidate.replace(party, newparty))
+            index = index + 1
+            for answer in q['answers']:
+                candidate = candidates[index]
+                normalized.append(candidate.replace(party, newparty))
+                index = index + 1
+        return normalized
+
     def do_get_candidates(self):
         try:
             candidates = self.poll.questions[0]['answers']

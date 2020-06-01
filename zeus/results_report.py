@@ -57,15 +57,19 @@ def load_results(data, repr_data, qdata):
     blank_votes = 0
     parties_indexes = {}
     candidates_indexes = {}
+    qdata2 = []
 
     index = 0
     for qi, q in enumerate(repr_data):
         parties_indexes[index] = q['question']
         qdata[index] = qdata[index].split(PARTY_SEPARATOR, 1)[0]
+        party2 = qdata[index].split(PARTY_SEPARATOR, 1)[0] + '{' + str(index) + '}'
+        qdata2.append(party2)
         index = index + 1
         for ai, a in enumerate(q['answers']):
             candidates_indexes[index] = a
             index = index + 1
+            qdata2.append(party2 + ': ' + a)
 
     if isinstance(data, basestring):
         jsondata = json.loads(data)
@@ -76,7 +80,11 @@ def load_results(data, repr_data, qdata):
             party = party.decode('utf8')
         except:
             pass
-        party = parties_indexes[qdata.index(party)]
+        if party not in qdata and party.endswith("}"):
+            _pindex = int(party.split("{")[-1][:-1])
+            party = parties_indexes[_pindex]
+        else:
+            party = parties_indexes[qdata.index(party)]
         parties_results.append((party, result))
         total_votes += result
 
@@ -90,12 +98,19 @@ def load_results(data, repr_data, qdata):
             party = party.decode('utf8')
         except:
             pass
-        party = parties_indexes[qdata.index(party)]
+        if party not in qdata and party.endswith("}"):
+            _pindex = int(party.split("{")[-1][:-1])
+            party = parties_indexes[_pindex]
+        else:
+            party = parties_indexes[qdata.index(party)]
         try:
             full_candidate = full_candidate.decode('utf8')
         except:
             pass
-        candidate = candidates_indexes[qdata.index(full_candidate)]
+        try:
+            candidate = candidates_indexes[qdata.index(full_candidate)]
+        except ValueError:
+            candidate = candidates_indexes[qdata2.index(full_candidate)]
 
         if party in candidates_results:
             candidates_results[party].append((candidate, result))
