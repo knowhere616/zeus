@@ -9,7 +9,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 
 from zeus.core import ZeusCoreElection, Teller, sk_from_args, \
-    TellerStream, gamma_count_parties, gamma_count_range
+    TellerStream, gamma_count_parties, gamma_count_range, ZeusError
 from zeus.core import V_CAST_VOTE, V_PUBLIC_AUDIT, V_AUDIT_REQUEST, \
     gamma_decode, to_absolute_answers, ZeusError
 
@@ -327,6 +327,12 @@ class ZeusDjangoElection(ZeusCoreElection):
                 self._do_store_audit_request(vote)
             if vote['status'] == V_PUBLIC_AUDIT:
                 self._do_store_public_audit(vote)
+
+    def validate_creating(self):
+        questions = map(lambda q: q['question'], self.poll.questions_data)
+        if len(questions) != len(set(questions)):
+            raise ZeusError("Duplicate questions.")
+        return super(ZeusDjangoElection, self).validate_creating()
 
     def do_get_normalized_candidates(self):
         from zeus.core import PARTY_SEPARATOR
