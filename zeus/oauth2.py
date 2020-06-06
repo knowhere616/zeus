@@ -99,8 +99,8 @@ class Oauth2Google(Oauth2Base):
         get_url = '{}?{}'.format(self.confirmation_url, get_params)
         response = urllib2.urlopen(get_url)
         resp = response.read()
-        self.poll.logger.info("[thirdparty-google] resolved user data %r", data)
         data = json.loads(resp)
+        self.poll.logger.info("[thirdparty-google] resolved user data %r", data)
         response_email = data
 
         if 'email' in data:
@@ -158,10 +158,12 @@ class Oauth2Other(Oauth2Base):
         self.id_token = data['id_token']
         self.token_type = data['token_type']
         self.expires_in = data['expires_in']
+        self.poll.logger.info("[thirdparty-other] exchanged oauth2 data %r", data)
 
     def confirm_email(self):
         self.poll.logger.info("[thirdparty-other] Confirm email at %r", self.confirmation_url)
         data = urllib.urlencode({'access_token': self.access_token})
+        self.poll.logger.info("[thirdparty-other] Confirm data %r", data)
         response = urllib2.urlopen(self.confirmation_url, data)
         self.poll.logger.info("[thirdparty-other] resolved user data %r", response)
         resp = response.read()
