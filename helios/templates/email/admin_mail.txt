@@ -5,6 +5,7 @@
 {% trans "ELECTION INFO" %}
 **************************
 - Election name: {{ election.name }} 
+- Election UUID: {{ election.uuid }} 
 - Election description: {{election.description}}
 - Election type: {{election_type}}
 - Starting date: {{election.voting_starts_at}}
