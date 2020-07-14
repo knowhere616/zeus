@@ -2636,6 +2636,7 @@ class Trustee(HeliosModel, TrusteeFeatures):
                 'election': self.election,
                 'url': url,
                 'msg': msg,
+                'SECURE_URL_HOST': settings.SECURE_URL_HOST,
                 'step': self.get_step(),
                 'step_text': self.STEP_TEXTS[self.get_step()-1]
             }
