@@ -55,3 +55,6 @@ msgstr ""
 "data to the election organisers. For issues regarding the operation of\n"
 "\"Zeus Digital Voting\", visit the service homepage at:\n"
 "%(site)s"
+
+msgid "Have trustee %s verify his key"
+msgstr "Have trustee %s verify their key"
