@@ -77,8 +77,8 @@ The trustees below are responsible for the decryption of the ballots
                 {% small_confirm_action label delete_url trustee_remove_confirm "" "POST" "delete-trustee alert" inline=1%}
                 </span>
             {% endif %}
+            </div>
         {% endif %}
-        </div>
         {% if admin %}
             {% if election.feature_can_send_trustee_email %}
                 <p class="last-notified">{% trans "Trustee last notified at" %} <span>{{ t.last_notified_at }}</span></p>
@@ -101,7 +101,6 @@ The trustees below are responsible for the decryption of the ballots
                 {% endif %}
             </p>
         {% endif %}
-        </li>
         {% if not forloop.last %}
             {% if admin %}
                 <br />
