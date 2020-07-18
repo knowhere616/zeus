@@ -282,7 +282,8 @@ def make_party_list_table(elements, styles, party_results):
                      ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                      ])
     widths = [PAGE_WIDTH / 1.5, PAGE_WIDTH / 8]
-    t = Table(party_results, colWidths=widths, style = table_style)
+    rows = map(lambda x: [Paragraph(x[0], styles['Zeus']), x[1]], party_results) 
+    t = Table(rows, colWidths=widths, style = table_style)
     elements.append(t)
 
 def make_results(elements, styles, total_votes, blank_votes,
