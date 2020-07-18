@@ -255,8 +255,9 @@ def make_totals(elements, styles, total_votes, blank_votes):
     elements.append(Spacer(1, 12))
 
 def make_party_list_heading(elements, styles, party, count):
+    p_style = styles['Zeus']
     if len(party) > 500:
-        party = party[:500] + "..."
+        p_style = styles['ZeusSmall']
     heading = escape(party).replace("\n", "<br />")
     count = str(count)
 
@@ -269,7 +270,7 @@ def make_party_list_heading(elements, styles, party, count):
 
     elements.append(Spacer(1, 32))
     widths = [PAGE_WIDTH / 1.5, PAGE_WIDTH / 8]
-    heading = Paragraph(heading, styles['Zeus']) 
+    heading = Paragraph(heading, p_style) 
     count = Paragraph(count, styles['Zeus']) 
     t = Table([[heading, count]], colWidths=widths, style = table_style)
     elements.append(t)
@@ -282,7 +283,16 @@ def make_party_list_table(elements, styles, party_results):
                      ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                      ])
     widths = [PAGE_WIDTH / 1.5, PAGE_WIDTH / 8]
-    rows = map(lambda x: [Paragraph(x[0], styles['Zeus']), x[1]], party_results) 
+    def make_row(item):
+        text, count = item
+        p_style = styles['Zeus']
+        if len(text) > 100:
+            p_style = styles['ZeusSmall']
+        return [
+            Paragraph(text, p_style),
+            count
+        ]
+    rows = map(make_row, party_results) 
     t = Table(rows, colWidths=widths, style = table_style)
     elements.append(t)
 
@@ -341,6 +351,11 @@ def build_stv_doc(title, name, institution_name, voting_start, voting_end,
         styles.add(ParagraphStyle(name='Zeus',
                                   fontName='LinLibertine',
                                   fontSize=12,
+                                  leading=16,
+                                  alignment=TA_JUSTIFY))
+        styles.add(ParagraphStyle(name='ZeusSmall',
+                                  fontName='LinLibertine',
+                                  fontSize=8,
                                   leading=16,
                                   alignment=TA_JUSTIFY))
         styles.add(ParagraphStyle(name='ZeusBold',
@@ -486,7 +501,11 @@ def build_doc(title, name, institution_name, voting_start, voting_end,
                                   fontSize=12,
                                   leading=16,
                                   alignment=TA_JUSTIFY))
-
+        styles.add(ParagraphStyle(name='ZeusSmall',
+                                  fontName='LinLibertine',
+                                  fontSize=8,
+                                  leading=16,
+                                  alignment=TA_JUSTIFY))
         styles.add(ParagraphStyle(name='ZeusBold',
                                   fontName='LinLibertineBd',
                                   fontSize=12,
