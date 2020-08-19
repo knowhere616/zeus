@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/zeus/landing/index.css">
+    <title>Zeus Online Voting</title>
+  </head>
+  <body>
+
+    {% if messages %}
+    <style>
+      #site-messages .label {
+        background-color: blue;
+      }
+      #site-messages .label {
+        padding: 20px;
+        margin-bottom: -30px;
+      }
+      #site-messages .label.success {
+        color: #fff;
+        background-color: green;
+      }
+      #site-messages .label.error {
+        color: #fff;
+        background-color: red;
+      }
+    </style>
+    <div id="site-messages" class="messages">
+      {% for message in messages %}
+      <div class="label medium {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+      <br />
+    </div>
+    {% endif %}
+    <header>
+        <img src="/static/zeus/landing/img/logo.png" id="logo">
+        <div id="header-text">
+                <h1 class="section-title">Elections that can’t be compromised.</h1>
+                <p>Go online with the best trusted online voting platform.</p>
+                <button class="rq-button" onclick="location.href='#request-demo'" type="button">Request a Demo</button>
+        </div>
+        <img src="/static/zeus/landing/img/voting-process.svg" width="100%" id="voting-process">
+        <img src="/static/zeus/landing/img/voting-process-mobile.svg" width="100%" id="voting-process-mobile">
+    </header>
+
+    <section id="why-zeus">
+      <div id="why-zeus-title">
+        <h1 class="section-title">Elections with Zeus</h1>
+      </div>
+      <div id="transparency-text">
+        <h2>Transparency.</h2>
+        <h3>Built-in.</h3>
+        <p>Zeus is the open source online voting platform.<br/>
+          This guarantees that anyone can verify its operation.</p>
+      </div>
+      <div id="transparency-icon">
+        <img src="/static/zeus/landing/img/transparency-icon.svg" width="auto" class="why-zeus-icon">
+      </div>
+      <div id="integrity-row"></div>
+      <div id="integrity-text">
+        <h2>Integrity.</h2>
+        <h3>Built-in.</h3>
+        <p>You don’t even have to trust the administrators or the election trustees. 
+          Zeus’ unique design safeguards the integrity of the elections on all levels.</p>
+      </div>
+      <div id="integrity-icon">
+        <img src="/static/zeus/landing/img/integrity-icon.svg" width="auto" class="why-zeus-icon">
+      </div>
+      <div id="proven-text">
+        <h2>Proven.</h2>
+        <h3>In hundreds of elections.</h3>
+        <p>This is the most secure voting system, not just in theory. 
+          Zeus has taken on more than {700} elections, all with flawless execution.</p>
+      </div>
+      <div id="proven-icon">
+        <img src="/static/zeus/landing/img/proven-icon.svg" width="auto" class="why-zeus-icon">
+      </div>
+    </section>
+
+    <section id="go-online">
+      <div id="go-online-text">
+        <h1>Go online</h1>
+        <div id="easy-fast">
+          <h2>Easy & Fast</h2>
+          <p>So much easier, both for the organization and the voters. Faster voting, faster results.</p>
+        </div>
+        <div id="increase-participation">
+          <h2>Increase Participation</h2>
+          <p>Include the remote and the disabled, as everyone can vote from anywhere.</p>
+        </div>
+        <div id="reduce-cost">
+          <h2>Reduce Costs</h2>
+          <p>Drastically lower production and administration costs for the organization. Zero cost for the voters.</p>
+        </div>
+      </div>
+      <img src="/static/zeus/landing/img/go-online.svg" width="70%" id="go-online-img">
+    </section>
+
+    <section id="video-section">
+        <img src="/static/zeus/landing/img/lines.svg" id="lines">
+        <iframe  
+          src="https://www.youtube.com/embed/zdISS9kvCLM" frameborder="0" 
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen id="video">
+        </iframe>
+    </section>
+
+    <section id="trusted-section">
+      <h1 class="section-title">Trusted by</h1>
+      <br/>
+      <p>
+        Zeus can be used not only for elections, but also for any polls where anonymity of the respondents must be assured.<br/>
+        To date, it has served hundreds of thousands of voters from:
+      </p>
+      <br/>
+      <div id="trusted-icons">
+        <img src="/static/zeus/landing/img/public-services.svg" id="public-service-icon">
+        <h4 id="public-service-text">Public Services</h4>
+        <img src="/static/zeus/landing/img/enterprises.svg" id="enterprises-icon">
+        <h4 id="enterprises-text">Enterprises</h4>
+        <img src="/static/zeus/landing/img/individuals.svg" id="individuals-icon">
+        <h4 id="individuals-text">Individuals</h4>
+      </div>
+    </section>
+
+    <section id="request-demo">
+      <h1 class="section-title" id="request-title">Do you want to conduct a poll?</h1>
+      <img src="/static/zeus/landing/img/big-ballot.svg" width="90%" id=ballot-white>
+      <div >
+          <div id="form-background">
+            <form id="request-form" method="post" action="{{settings.URL_HOST}}{% url "site_demo_request" %}">
+              {% csrf_token %}
+              <div class="form-group row">
+                <label for="inputPassword" class="col-lg-5">Full Name:</label>
+                <div class="col-lg-7">
+                  <input name="fullname" type="text" class="form-control">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-lg-5">Email:</label>
+                <div class="col-lg-7">
+                  <input name="email" type="text" class="form-control">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="staticEmail" class="col-lg-5">Organisation:</label>
+                <div class="col-lg-7">
+                  <input name="organisation" type="text" class="form-control">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="staticEmail" class="col-lg-5">Type of organisation:</label>
+                <div class="col-lg-7">
+                  <select name="type_of_organisation" class="form-control">
+                    <option>Public Service</option>
+                    <option>Enterprise</option>
+                    <option>Organisation</option>
+                    <option>Individual</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword" class="col-lg-5">Number of voters:</label>
+                <div class="col-lg-7">
+                  <select name="number_of_voters" class="form-control">
+                    <option>1-100</option>
+                    <option>101-1000</option>
+                    <option>1001-10000</option>
+                    <option>10000+</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-lg-12 center">
+                  <button type="submit" class="rq-button">Request a Demo</button>
+                </div>
+              </div>
+            </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Copyright <a href="https://www.grnet.gr">GRNET</a> 2020. All right reserved.Powered by <a href="https://www.grnet.gr">GRNET</a></p>
+    </footer>
+
+    <!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
