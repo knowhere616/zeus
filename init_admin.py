@@ -12,6 +12,7 @@ from zeus.models import *
 from heliosauth.models import *
 from heliosauth.auth_systems.password import make_password
 from zeus.models import Institution
+from django.conf import settings
 
 def main(institution_name, username, password):
     inst, created = Institution.objects.get_or_create(name=institution_name)

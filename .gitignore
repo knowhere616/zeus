@@ -27,3 +27,12 @@ deploy/config.yaml
 /dist
 /.venv
 terms/terms_*.html
+
+elections_report*.csv
+institution_map.json
+local.env
+reports/
+scripts/
+zeus_elections_report.csv
+analytics
+docker-storage/

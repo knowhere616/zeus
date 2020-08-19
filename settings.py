@@ -101,7 +101,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'pagination',
     'djcelery',
-    'kombu.transport.django',
     'heliosauth',
     'helios',
     'zeus',
@@ -346,3 +345,7 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# useful trick for custom settings
+if os.environ.get('ZEUS_DOCKER_ENV', False):
+    from docker_settings import *

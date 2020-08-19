@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  app:
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: grnet/zeus:latest
+    volumes:
+      - .:/srv/zeus_app
+      - ./docker-storage/zeus:/srv/zeus-data
+      - ./docker/settings.py:/srv/python-site/docker_settings.py
+    env_file:
+      - defaults.env
+      - local.env
+    depends_on:
+      - db
+  db:
+    image: postgres:11
+    volumes:
+      - ./docker-storage/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 'zeus'
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.nginx.dev
+    image: grnet/zeus-nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - app

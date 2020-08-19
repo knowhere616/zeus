@@ -4,40 +4,28 @@ Run Zeus using Docker
 
 .. notice:
 
-   A docker installation is required to run these steps
+   Docker and `docker-compose` are required to follow along this guide.
 
 
-1. Create a customized config file::
+1. Create a customized environment file::
 
-    $ cp deploy/config.yaml.example deploy/config.yaml
-    $ vim deploy/config.yaml
-
-
-2. Build docker image::
-
-    $ docker build -t grnet/zeus .
+    $ cp defaults.env local.env
+    $ vim local.env
 
 
-3. Create docker container::
+2. Spawn docker containers ::
+
+    $ docker-compose up -d --force-recreate --build --remove-orphans
 
 
-    $ docker create -P \
-        -v `pwd`/deploy/config.yaml:/etc/puppet/hieraconf/common.yaml \
-        -p 8000:8000 \
-        --name zeus \
-        grnet/zeus
-
-
-4. Start docker container::
-
-    $ docker start zeus
-    $ docker logs -f zeus
+3. Inspect docker instance
+    $ docker-compose logs -f app
 
 
 5. Wait for a few seconds for initialization scripts to complete and login as 
-   administrator using credentials set in `config.yaml`::
+   administrator using `admin/admin` credentials::
 
-    $ open https://127.0.0.1:8000/zeus/auth/auth/login
+    $ open https://localhost/zeus/auth/auth/login
 
 
 Development
