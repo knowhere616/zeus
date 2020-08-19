@@ -26,7 +26,7 @@ python init_admin.py GRNET admin admin
 
 mkdir -p /var/run/celery/
 mkdir -p /var/log/celery/
-C_FORCE_ROOT=1 python manage.py celery worker --pidfile=/var/run/celery/w1.pid -n w1@zeus-docker --workdir=/srv/zeus_app --logfile=- &
+C_FORCE_ROOT=1 python manage.py celery worker --pidfile=/var/run/celery/w1.pid -n w1@zeus-docker --workdir=/srv/zeus_app --logfile=/srv/zeus-data/celery.log &
 
 tail -f /srv/zeus-data/zeus.log &
 
