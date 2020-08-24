@@ -329,9 +329,10 @@ class ZeusDjangoElection(ZeusCoreElection):
                 self._do_store_public_audit(vote)
 
     def validate_creating(self):
-        questions = map(lambda q: q['question'], self.poll.questions_data)
-        if len(questions) != len(set(questions)):
-            raise ZeusError("Duplicate questions.")
+        if self.poll.questions_data and 'question' in self.poll.questions_data[0]:
+            questions = map(lambda q: q['question'], self.poll.questions_data)
+            if len(questions) != len(set(questions)):
+                raise ZeusError("Duplicate questions.")
         return super(ZeusDjangoElection, self).validate_creating()
 
     def do_get_normalized_candidates(self):
