@@ -9,5 +9,8 @@ before_install:
   - docker build -t grnet/zeus .
   - docker build -f Dockerfile.tests -t grnet/zeus:tests .
 
+install:
+  - pip install -r requirements-doc.txt
+
 script:
   - docker run -ti -e ZEUS_TESTS_VERBOSE=1 --env-file test.env --user root zeus account_administration --settings=test_settings
