@@ -13,4 +13,4 @@ install:
   - pip install -r requirements-doc.txt
 
 script:
-  - docker run -ti -e ZEUS_TESTS_VERBOSE=1 --env-file test.env --user root zeus account_administration --settings=test_settings
+  - docker run -ti -e ZEUS_TESTS_VERBOSE=1 --env-file test.env --user root grnet/zeus:tests zeus account_administration --settings=test_settings
