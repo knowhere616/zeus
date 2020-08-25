@@ -539,6 +539,7 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
         self.verbose('+ Election is closed')
 
     def decrypt_with_trustees(self, pks):
+        from helios.crypto.elgamal import Ciphertext
         for trustee, kp in pks.iteritems():
             t = Trustee.objects.get(uuid=trustee)
             self.c.get(self.locations['logout'])
@@ -550,7 +551,8 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
                 decryption_factors = [[]]
                 decryption_proofs = [[]]
                 for vote in p.mixed_ballots['tally'][0]:
-                    dec_factor, proof = sk.decryption_factor_and_proof(vote)
+                    cipher = Ciphertext(alpha=vote.get('alpha'), beta=vote.get('beta'))
+                    dec_factor, proof = sk.decryption_factor_and_proof(cipher)
                     decryption_factors[0].append(dec_factor)
                     decryption_proofs[0].append({
                         'commitment': proof.commitment,
