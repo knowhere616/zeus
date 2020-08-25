@@ -1,0 +1,16 @@
+FROM grnet/zeus
+
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get install -y postgresql-9.4 postgresql-contrib-9.4
+RUN apt-get install -y python-pytest python-freezegun
+
+USER postgres
+RUN /etc/init.d/postgresql start && \
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';"
+
+USER root
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+ENV ZEUS_DATABASE_URL=postgres://docker:docker@localhost:5432/postgres
+ENV ZEUS_TESTS_VERBOSE=1
+
+ENTRYPOINT ["/srv/zeus_app/docker/test.sh"]

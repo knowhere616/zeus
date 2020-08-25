@@ -1,0 +1,15 @@
+FROM debian:jessie
+MAINTAINER Kostas Papadimitriou "kpap@grnet.gr"
+
+RUN find /var/lib/apt -type f -exec rm {} \+
+RUN apt-get -y update
+
+RUN apt-get -y install python-gmpy python-crypto 
+RUN apt-get -y install python-pip
+RUN pip install zeus-client
+
+VOLUME /trustee/key
+ENV LOGIN_URL ""
+
+ENTRYPOINT ["zeus-client"]
+CMD decrypt

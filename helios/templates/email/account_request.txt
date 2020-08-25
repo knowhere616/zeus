@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{{fields}}
+Account request
+**************************
+- Full Name:: {{ fullname }} 
+- Email: {{ email }} 
+- Organisation: {{ organisation }}
+- Type of organisation: {{ type_of_organisation }}
+- Number of voters: {{ number_of_voters }}

@@ -101,7 +101,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'pagination',
     'djcelery',
-    'kombu.transport.django',
     'heliosauth',
     'helios',
     'zeus',
@@ -144,6 +143,7 @@ VOTER_UPLOAD_REL_PATH = "voters/%Y/%m/%d"
 DEFAULT_FROM_EMAIL = get_from_env('DEFAULT_FROM_EMAIL', 'elections@zeus.minedu.gov.gr')
 DEFAULT_FROM_NAME = get_from_env('DEFAULT_FROM_NAME', 'Εκλογές zeus.minedu.gov.gr')
 SERVER_EMAIL = '%s <%s>' % (DEFAULT_FROM_NAME, DEFAULT_FROM_EMAIL)
+HELPDESK_EMAIL = DEFAULT_FROM_EMAIL
 
 LOGIN_URL = '/auth/'
 LOGOUT_ON_CONFIRMATION = False
@@ -346,3 +346,7 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# useful trick for custom settings
+if os.environ.get('ZEUS_DOCKER_ENV', False):
+    from docker_settings import *

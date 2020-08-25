@@ -1,0 +1,704 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@100;300;400;500;700;800;900&display=swap');
+@import "helpers/variables";
+@import "helpers/placeholders";
+
+h2{
+    font-weight: bold;
+    font-size: 40px;
+    line-height: 48px;
+}
+
+h3{
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 43px;
+}
+
+h4{
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 29px;
+}
+
+
+@mixin grid($row, $column, $horizontally:center, $vertically:center) {
+    grid-row: $row;
+    grid-column: $column;
+    justify-self: $horizontally;
+    align-self: $vertically
+}
+
+section{
+    margin-bottom: 8vh;
+}
+
+html, body {
+    overflow-x: hidden;
+  }
+
+body{
+    position: relative;
+    font-family: 'Alegreya Sans', sans-serif;
+    color: $zeus-blue;
+    font-style: normal;
+    margin: 0px;
+    padding: 0px;
+}
+
+header{
+    position:relative;
+    height: 100vh;
+    width: 100vw;
+    margin-bottom: 7vh;
+}
+
+#header-text {
+    display:grid;
+    align-content:center;
+    justify-items:center;
+    height: 80vh;
+}
+
+#logo {
+    position:absolute;
+    height: 15vh;
+    width:auto;
+    top: 20px;
+    left: 20px;
+}
+
+#voting-process{
+    position: absolute;
+    margin-top:20px;
+    bottom:0;
+    left:0;
+}
+
+#voting-process-mobile{
+    display:none;
+}
+
+.section-title {
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 58px;
+    text-align: center;
+}
+
+p{
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 29px;
+}
+
+.rq-button {
+    background: $ciel;
+    box-shadow: 0px 8px 8px rgba(0, 45, 86, 0.2);
+    width: 244px;
+    height: 69px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 29px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.rq-button:hover {
+    cursor: pointer;
+    background: $ciel-hover;
+}
+
+#why-zeus {
+    display:grid;
+    height: 140vh;
+    width: 100vw;
+    grid-template-rows: 20vh 40vh 40vh 40vh;
+    grid-template-columns: [start] 20% 30% 30% 20% [end];
+    grid-auto-flow: row;
+}
+
+#why-zeus-title{
+    @include grid(1, start/end, center);
+}
+
+#transparency-text {
+    @include grid(2, 2, start);
+}
+
+#integrity-text {
+    @include grid(3, 3, start);
+    text-align: right;
+}
+
+#proven-text{
+    @include grid(4, 2, start);
+}
+
+#transparency-icon {
+    @include grid(2, 3, end);
+}
+
+#integrity-icon {
+    @include grid(3, 2, start);
+}
+
+#proven-icon{
+    @include grid(4, 3, end);
+}
+
+#integrity-row{
+    grid-row:3;
+    grid-column-start: 1;
+    grid-column-end: 5;
+    background: $light-grey;
+}
+
+#go-online{
+    background-image: url(img/blue-background.svg); 
+    height:90vh; 
+    width:100vw;   
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    color: white;
+    display: grid;
+    grid-template-columns: [start] 12% 38% 38% 12% [end];
+    grid-template-rows: auto;
+
+    h1{
+        font-weight: 800;
+        font-size: 64px;
+        line-height: 77px;
+        margin-bottom:30px;
+    }
+
+    p{
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom:40px;
+    }
+}
+
+#go-online-text{
+    @include grid(1,2);
+}
+
+#go-online-img{
+    @include grid(1,3, end, end);
+    margin-bottom:-5px;
+}
+
+#video-section{
+    height: 75vh;
+    position:relative;
+}
+
+#lines{
+    position:absolute;
+    width: 100%;   
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#video{
+    position: absolute; 
+    z-index: 2;   
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); 
+    border: 3px solid $zeus-blue;
+    width: 70vw;
+    height: 70vh;
+}
+
+#trusted-section{
+    text-align:center; 
+    padding-left: 12%; 
+    padding-right: 12%; 
+    padding-top:3%; 
+    padding-bottom:3%;
+}
+
+#trusted-icons {
+    display:grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto;
+    grid-auto-flow: row;
+    padding-right: 5vw;
+    padding-left: 5vw;
+}
+
+#public-service-icon{
+    @include grid(1,1);
+    width: auto;
+}
+
+#public-service-text{
+    @include grid(2,1, $vertically: start);
+    margin-top:0;
+}
+
+#enterprises-icon{
+    @include grid(1,2);
+    width: auto;
+}
+
+#enterprises-text{
+    @include grid(2,2, $vertically: start);
+    margin-top:0;
+}
+
+#individuals-icon{
+    @include grid(1,3);
+    width: auto;
+}
+
+#individuals-text{
+    @include grid(2,3, $vertically: start);
+    margin-top:0;
+}
+
+#request-demo{
+    background-image: url(img/grey-background.svg); 
+    height:95vh; 
+    width:100vw;   
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    margin-bottom: 0;
+    position:relative;
+    text-align:center;
+}
+
+#ballot-white {
+    bottom: -2px;
+    position: absolute;
+    left:0;
+    right:0;
+    margin:auto;
+}
+
+
+#form-background {
+    border: 3px solid $zeus-blue;
+    background-color: white;
+    height: 60%;
+    width: 46%;
+    bottom: 13%;
+    position: absolute;
+    left: 27%;
+    z-index: 3;
+}
+
+label{
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 29px;
+    text-align:right;
+}
+
+#request-form{
+    padding-top: 5%;
+    padding-right: 5%;
+    padding-left: 5%;
+}
+
+#request-title{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 9%;
+}
+
+footer{
+    background: #002D56; 
+    height: 100px; 
+    text-align:center; 
+    padding-top:40px;
+
+    p{
+      color:white;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 20px;
+    }
+}
+
+@media only screen and (max-width: 920px) {
+
+    .section-title{
+        font-weight: 550;
+        font-size: 40px;
+    }
+
+    h2{
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 34px;
+    }
+    
+    h3{
+        font-size: 28px;
+    }
+    
+    h4{
+        font-weight: normal;
+        font-size: 24px;
+    }
+
+    p{
+        font-size: 20px;
+    }
+
+    #logo {
+        height: 10vh;
+        width:auto;
+        top: 5vh;
+        left: 5vw;
+    }
+
+    #voting-process{
+        display:none;
+    }
+    
+    #voting-process-mobile{
+        display:block;
+        position: absolute;
+        margin-top:20px;
+        bottom: -20px;
+        left:0;
+    }
+
+    section{
+        margin-bottom: 4vh;
+    }
+
+    #why-zeus {
+        grid-template-columns: [start] 10vw 40vw 40vw 10vw [end];
+    }
+
+    .why-zeus-icon{
+        width: 40vw;
+    }
+
+    #transparency-icon {
+        @include grid(2, 3, end);
+    }
+    
+    #integrity-icon {
+        @include grid(3, 2, start);
+    }
+    
+    #proven-icon{
+        @include grid(4, 3, end);
+    }
+    
+   
+    #go-online{
+        display: grid;
+        grid-template-columns: [start] 10% 80% 10%[end];
+        grid-template-rows: auto;
+    
+        h1{
+            font-weight: 550;
+            font-size: 36px;
+            line-height: 34px;
+        }
+    
+        p{
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom:40px;
+        }
+    }
+    
+    #go-online-text{
+        margin-bottom: 200px;
+        @include grid(1,2);
+    }
+    
+    #go-online-img{
+        grid-column: 2/3;
+        width:40%;
+    }
+
+    #video-section{
+        height: 40vh;
+    }
+    
+    #lines{
+        width: 200%;  
+    }
+    
+    #video{
+        width: 90vw;
+        height: 30vh;
+    }
+
+    
+
+    #request-demo{
+        background-image: url(img/grey-background.svg); 
+        height:90vh; 
+        width:100vw;   
+        background-repeat: no-repeat; /* Do not repeat the image */
+        background-size: cover; /* Resize the background image to cover the entire container */
+        margin-bottom: 0;
+        position:relative;
+        text-align:center;
+    }
+    
+    #ballot-white {
+        display:none;
+    }
+    
+    
+    #form-background {
+        border: 3px solid $zeus-blue;
+        border-bottom:0px;
+        background-color: white;
+        height: 70%;
+        width: 90%;
+        bottom: 0;
+        left: 5%;
+        z-index: 0;
+    }
+    
+    label{
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 29px;
+        text-align:left;
+    }
+    
+    #request-form{
+        padding-top:5%;
+        padding-right: 5%;
+        padding-left: 5%;
+    }
+    
+    #request-title{
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 5%;
+    }
+
+    footer{
+        p{
+          font-size: 14px;
+        }
+    }
+
+    
+
+}
+
+@media only screen and (max-width: 600px) {
+
+    .section-title{
+        font-weight: 550;
+        font-size: 30px;
+        line-height: 34px;
+    }
+
+    h2{
+        font-weight: 500;
+        font-size: 28px;
+        line-height: 34px;
+    }
+    
+    h3{
+        font-weight: normal;
+        font-size: 26px;
+        line-height: 31px;
+    }
+    
+    h4{
+        font-weight: normal;
+        font-size: 22px;
+        line-height: 29px;
+    }
+
+    p{
+        font-weight: 300;
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    #logo {
+        position:absolute;
+        height: 10vh;
+        width:auto;
+        top: 10px;
+        left: 10px;
+    }
+
+    #header-text {
+        display:grid;
+        align-content:center;
+        justify-items:center;
+        height: 90vh;
+        padding-right: 3vw;
+        padding-left: 3vw;
+        text-align: center;
+
+        p{
+            font-size: 20px;
+            padding-right: 6vh;
+            padding-left: 6vh;
+            padding-top: 1vh;
+        }
+    }
+
+    .rq-button {
+        width: 166px;
+        height: 47px;
+        font-size: 18px;
+        font-weight: 400;
+    }
+
+    #voting-process{
+        display:none;
+    }
+    
+
+    section{
+        margin-bottom: 4vh;
+    }
+
+    #why-zeus {
+        display:grid;
+        height: 172vh;
+        width: 100vw;
+        grid-template-rows: 10vh 27vh 27vh 27vh 27vh 27vh;
+        grid-template-columns: [start] 5% 90% 5% [end];
+        grid-auto-flow: row;
+    }
+
+    .why-zeus-icon{
+        width: 80%;
+    }
+    
+    #why-zeus-title{
+        @include grid(1, start/end, center, end);
+        margin-top: 1vh;
+    }
+    
+    #transparency-text {
+        @include grid(2, 2, start, end);
+    }
+    
+    #integrity-text {
+        @include grid(4, 2, start, end);
+        text-align: left;
+    }
+    
+    #proven-text{
+        @include grid(6, 2, start, end);
+    }
+    
+    #transparency-icon {
+        @include grid(3, 2, center, start);
+        text-align: center;
+    }
+    
+    #integrity-icon {
+        @include grid(5, 2, center, start);
+        text-align: center;
+    }
+    
+    #proven-icon{
+        @include grid(7, 2, center, start);
+        text-align: center;
+    }
+    
+    #integrity-row{
+        grid-row-start:4;
+        grid-row-end:6;
+        grid-column-start: 1;
+        grid-column-end: 4;
+        background: $light-grey;
+    }
+
+    
+    #go-online-text{
+        @include grid(1,2);
+        margin-bottom: 0px;
+    }
+    
+    #go-online-img{
+        display:none;
+    }
+
+
+    #trusted-section{
+        text-align:center; 
+        padding-left: 0; 
+        padding-right: 0; 
+        padding-top:3%; 
+        padding-bottom:3%;
+
+        p{
+            padding-left: 5%; 
+            padding-right: 5%;
+        }
+    }
+    
+    #trusted-icons {
+        display:grid;
+        width: 100vw;
+        grid-template-columns: auto;
+        grid-template-rows: auto auto auto auto auto auto;
+        grid-auto-flow: row;
+        // grid-row-gap: 2vh;
+        padding-left: 0; 
+        padding-right: 0; 
+    }
+
+    #public-service-icon{
+        @include grid(1,1);
+        height: 8vh;
+    }
+    
+    #public-service-text{
+        @include grid(2,1);
+        margin-bottom: 4vh;
+    }
+    
+    #enterprises-icon{
+        @include grid(3,1);
+        height: 8vh;
+    }
+    
+    #enterprises-text{
+        @include grid(4,1);
+        margin-bottom: 4vh;
+    }
+    
+    #individuals-icon{
+        @include grid(5,1);
+        height: 8vh;
+    }
+    
+    #individuals-text{
+        @include grid(6,1);
+        margin-bottom: 4vh;
+    }
+
+    #request-demo{
+        height:105vh; 
+    }
+    
+    #form-background {
+        height: 80%;
+    }
+    
+}
+

@@ -17,8 +17,10 @@ dist
 .DS_Store
 logo_bg*
 deploy
+docker
 *.tar.gz
 sync-in.sh
 sync-out.sh
 build
 .vscode
+docker-storage

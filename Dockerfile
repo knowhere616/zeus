@@ -1,49 +1,48 @@
 FROM debian:jessie
-MAINTAINER Kostas Papadimitriou "kpap@grnet.gr"
 
-RUN find /var/lib/apt -type f -exec rm {} \+
-RUN apt-get -y update
-RUN apt-get -y install vim git lsb-release wget multitail
-RUN wget https://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb
-RUN apt-get -y install puppet puppet-module-puppetlabs-apt puppet-module-puppetlabs-stdlib
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get install -y gettext postgresql-client
 
-RUN puppet module install puppetlabs-apache --version 1.11.0
-RUN puppet module install puppetlabs-postgresql --version 4.9.0
-RUN puppet module install "stankevich/python" --version 1.18.2
+RUN apt-get install -y ttf-dejavu ttf-dejavu-core ttf-dejavu-extra 
+RUN apt-get install -y python2.7 python-setuptools
+RUN apt-get install -y python-amqp python-amqplib python-bleach python-celery python-chardet 
+RUN apt-get install -y python-crypto python-dateutil python-django 
+RUN apt-get install -y python-django-celery python-django-mptt python-django-pagination 
+RUN apt-get install -y python-django-picklefield python-django-south python-gmpy
+RUN apt-get install -y python-kombu python-lxml python-markdown
+RUN apt-get install -y python-openid python-psycopg2 python-pyicu 
+RUN apt-get install -y python-pyparsing python-reportlab python-reportlab-accel
+RUN apt-get install -y python-yaml python-pip
+RUN apt-get install -y gunicorn
+RUN apt-get install -y vim ipython
 
-ADD deploy/packages.pp /srv/deploy/packages.pp
-RUN cd /srv/deploy && puppet apply -v packages.pp
+RUN apt-get install -y wget
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb
+RUN dpkg -i dumb-init_*.deb
 
-ADD deploy/hiera.yaml /etc/puppet/hiera.yaml
+RUN pip install django-environ==0.4.5
+
+RUN apt-get install -y celeryd
+RUN echo 'CELERYD_CHDIR=/srv/zeus_app' >> /etc/default/celeryd
+RUN echo 'CELERYD_MULTI="\$CELERYD_CHDIR/manage.py celeryd_multi"' >> /etc/default/celeryd
+RUN echo 'CELERYCTL="\$CELERYD_CHDIR/manage.py celeryctl"' >> /etc/default/celeryd
+RUN echo 'export DJANGO_SETTINGS_MODULE="settings"' >> /etc/default/celeryd
+RUN echo 'ENABLED=true' >> /etc/default/celeryd
+
+RUN mkdir /storage/
+
+ENV PYTHONUNBUFFERED 1
+
 RUN mkdir /srv/zeus_app
 
+COPY . /srv/zeus_app/
+WORKDIR /srv/zeus_app
 
-ADD . /srv/zeus_app
-ADD deploy/config.yaml /etc/puppet/hieraconf/common.yaml
+VOLUME /srv/zeus-data
 
-COPY deploy/grnet-zeus /etc/puppet/modules/zeus
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
 
-ADD deploy/zeus.pp /srv/deploy/zeus.pp
-RUN apt-get -y update
-RUN cd /srv/deploy && puppet apply -v zeus.pp
-
-RUN service gunicorn stop
-RUN service postgresql stop
-RUN service apache2 stop
-RUN /etc/init.d/python-celery stop
-
-ADD deploy/entrypoint.sh /srv/deploy/entrypoint.sh
-RUN chmod +x /srv/deploy/entrypoint.sh
-
-RUN service gunicorn stop
-RUN service postgresql stop
-RUN service apache2 stop
-RUN /etc/init.d/python-celery stop
-
-VOLUME /srv/data
-VOLUME /srv/static
-
-EXPOSE 80
-
-ENTRYPOINT ["/bin/bash", "/srv/deploy/entrypoint.sh"]
-CMD ["run"]
+ENV PYTHONPATH=/srv/zeus_app
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["/srv/zeus_app/docker/entrypoint.sh"]

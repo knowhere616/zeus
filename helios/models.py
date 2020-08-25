@@ -2656,3 +2656,12 @@ class Trustee(HeliosModel, TrusteeFeatures):
     @property
     def datatype(self):
         return self.election.datatype.replace('Election', 'Trustee')
+
+def notify_account_request(fields):
+    """
+    Notify admins with email
+    """
+    body = render_to_string("email/account_request.txt", fields)
+    subject = render_to_string("email/account_request_subject.txt", fields)
+    to = [settings.HELPDESK_EMAIL]
+    send_mail(subject.replace(u"\n", u""), body, settings.SERVER_EMAIL, to)

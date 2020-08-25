@@ -21,7 +21,7 @@ from django.forms.formsets import formset_factory
 
 from helios.view_utils import render_template
 from heliosauth.auth_systems.password import make_password
-from helios.models import User, Election
+from helios.models import User, Election, notify_account_request
 from heliosauth.models import UserGroup
 from zeus.models import Institution
 from zeus.utils import email_is_valid, resolve_ip
@@ -121,6 +121,15 @@ def setlang(request):
         return HttpResponseRedirect(reverse('home'))
     return set_language(request)
 
+
+def landing(request):
+    user = request.zeususer
+    bad_login = request.GET.get('bad_login')
+    return render_template(request, "zeus/landing", {
+        'menu_active': 'home',
+        'user': user,
+        'bad_login': bad_login
+    })
 
 def home(request):
     user = request.zeususer
@@ -319,6 +328,42 @@ def _get_demo_user(email_address):
         newuser.user_groups.add(demogroup)
         newuser.save()
     return newuser, password
+
+
+def account_request(request):
+    user = request.zeususer
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    client_address = resolve_ip(request)
+    email = request.POST.get('email', None)
+    home = reverse('landing')
+
+    if not email_is_valid(email):
+        msg = _("Invalid email address")
+        messages.error(request, msg)
+        return landing(request)
+
+    if not client_address:
+        msg = _("Client address unavailable")
+        messages.error(request, msg)
+        return HttpResponseRedirect(home)
+
+    now_seconds = int(time())
+    last_seconds = _demo_addresses[client_address]
+    if now_seconds - last_seconds < settings.DEMO_SUBMIT_INTERVAL_SECONDS:
+        msg = _("There are too many requests from your address")
+        messages.error(request, msg)
+        return HttpResponseRedirect(home)
+
+    data = request.POST
+    msg = _("Your request has been submitted. We will contact you as soon as possible.")
+    messages.success(request, msg)
+    keys = ['number_of_voters', 'organisation', 'email', 'type_of_organisation', 'fullname']
+    fields = {}
+    for key in keys:
+        fields[key] = request.POST[key]
+    notify_account_request(fields)
+    return HttpResponseRedirect(home)
 
 
 def demo(request):

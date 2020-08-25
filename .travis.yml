@@ -6,11 +6,8 @@ services:
   - docker
 
 before_install:
-  - cp deploy/config.tests.yaml deploy/config.yaml
   - docker build -t grnet/zeus .
-
-install:
-  - pip install -r requirements-doc.txt
+  - docker build -f Dockerfile.tests -t grnet/zeus:tests .
 
 script:
-  - docker run -ti -e ZEUS_TESTS_VERBOSE=1 --user root grnet/zeus test zeus account_administration --failfast --settings=test_settings
+  - docker run -ti -e ZEUS_TESTS_VERBOSE=1 --env-file test.env --user root zeus account_administration --settings=test_settings
