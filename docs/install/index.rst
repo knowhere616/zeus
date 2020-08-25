@@ -2,10 +2,15 @@ Run Zeus using Docker
 =====================
 
 
-.. notice:
+.. note::
 
    Docker and `docker-compose` are required to follow along this guide.
 
+.. warning::
+
+   We highly discourage you to use the tools mentioned bellow for production
+   purposes. Included docker images are composed to facilitate testing and
+   demoing of the Zeus system.
 
 1. Create a customized environment file::
 
