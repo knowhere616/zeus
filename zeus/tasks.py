@@ -316,7 +316,9 @@ def election_zeus_partial_decrypt(election_id):
     notify_trustees.delay(election.pk)
     for poll in election.polls.all():
         if poll.feature_can_zeus_partial_decrypt:
+            poll.logger.info("Spawn partial decrypt")
             poll_zeus_partial_decrypt.delay(poll.pk)
+            return
 
 
 @poll_task(ignore_result=True)
@@ -327,6 +329,11 @@ def poll_zeus_partial_decrypt(poll_id):
         poll.partial_decrypt_started_at = datetime.datetime.now()
         poll.partial_decrypt_finished_at = datetime.datetime.now()
         poll.save()
+    for poll in poll.election.polls.all():
+        if poll.feature_can_zeus_partial_decrypt:
+            poll.logger.info("Spawn partial decrypt")
+            poll_zeus_partial_decrypt.apply_async(args=[poll.pk])
+            return
     if poll.election.polls_feature_partial_decryptions_finished:
         election_decrypt.delay(poll.election.pk)
 
