@@ -103,10 +103,15 @@ class EmailBackend(ContactBackend):
     def do_notify(self, voter, id, subject, body, attachments):
         self.logger.info("Notifying voter %r for '%s' via email (%r)" % (voter.voter_login_id, id, voter.voter_email))
         subject = subject.replace("\n", "")
+        headers = {
+            "X-Zeus-Election": voter.poll.election.uuid,
+            "X-Zeus-Poll": voter.poll.uuid,
+            "X-Zeus-Subject": id,
+        }
         if attachments and len(attachments) > 0:
             name = "%s %s" % (voter.voter_name, voter.voter_surname)
             to = formataddr((name, voter.voter_email))
-            message = EmailMessage(subject, body, settings.SERVER_EMAIL, [to])
+            message = EmailMessage(subject, body, settings.SERVER_EMAIL, [to], headers=headers)
             for attachment in attachments:
                 message.attach(*attachment)
             try:
@@ -115,7 +120,7 @@ class EmailBackend(ContactBackend):
                 self.logger.exception(e)
                 return None, e
         else:
-            return voter.user.send_message(subject, body), None
+            return voter.user.send_message(subject, body, headers=headers), None
 
 
 class SMSBackend(ContactBackend):
