@@ -58,21 +58,18 @@ def poll_task(*taskargs, **taskkwargs):
     return wrapper
 
 
-@task(rate_limit=getattr(settings, 'ZEUS_VOTER_EMAIL_RATE', '20/m'),
-      ignore_result=True)
-def single_voter_email(voter_uuid,
-                       contact_methods,
-                       contact_id,
-                       subject_template_email,
-                       body_template_email,
-                       body_template_sms,
-                       template_vars={},
-                       update_date=True,
-                       update_booth_invitation_date=False,
-                       notify_once=False,
-                       update_notification_date=False,
-                       forum_notification=None):
-
+def _send_email(voter_uuid,
+                contact_methods,
+                contact_id,
+                subject_template_email,
+                body_template_email,
+                body_template_sms,
+                template_vars={},
+                update_date=True,
+                update_booth_invitation_date=False,
+                notify_once=False,
+                update_notification_date=False,
+                forum_notification=None):
     voter = Voter.objects.get(uuid=voter_uuid)
     lang = voter.poll.election.communication_language
 
@@ -125,6 +122,18 @@ def single_voter_email(voter_uuid,
             sent_hook=sent_hook,
             notify_once=notify_once)
 
+@task(rate_limit=getattr(settings, 'ZEUS_VOTER_EMAIL_RATE', '20/m'),
+      ignore_result=True)
+def single_voter_email(voter_uuid,
+                       *args):
+    _send_email(voter_uuid, *args)
+
+@task(rate_limit=getattr(settings, 'ZEUS_VOTER_EMAIL_RATE', '20/m'),
+      ignore_result=True)
+def batch_voter_email(voter_uuids,
+                       *args):
+    for voter_uuid in voter_uuids:
+        _send_email(voter_uuid, *args)
 
 @task(ignore_result=True)
 def voters_email(poll_id,
@@ -153,8 +162,14 @@ def voters_email(poll_id,
         if 'vote_body' in body_template_sms:
             body_template_sms = body_template_sms.replace("_body.txt", "_linked_body.txt")
 
-    for voter in voters:
-        single_voter_email.delay(voter.uuid,
+    def chunks(lst, n):
+        """Yield successive n-sized chunks from lst."""
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+    voter_uuids = voters.values_list('uuid', flat=True)
+    batches = chunks(voter_uuids, getattr(settings, 'ZEUS_BATCH_EMAIL_CHUNK_SIZE', 300))
+    for batch in batches:
+        batch_voter_email.delay(batch,
                                  contact_methods,
                                  contact_id,
                                  subject_template_email,
