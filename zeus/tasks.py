@@ -350,18 +350,29 @@ def election_decrypt(election_id):
     for poll in election.polls.all():
         if poll.feature_can_decrypt:
             poll_decrypt.delay(poll.pk)
+            return
 
 
 @poll_task(ignore_result=True)
 def poll_decrypt(poll_id):
     poll = Poll.objects.get(pk=poll_id)
     poll.decrypt()
+    for poll in poll.election.polls.all():
+        if poll.feature_can_decrypt:
+            poll_decrypt.delay(poll.pk)
+            return
     if poll.election.polls_feature_decrypt_finished:
         subject = "Decryption finished"
         msg = "Decryption finished"
         poll.election.notify_admins(msg=msg, subject=subject)
         election_compute_results.delay(poll.election.pk)
 
+@poll_task(ignore_result=True)
+def poll_store_zeus_proofs(poll_id):
+    poll = Poll.objects.get(pk=poll_id)
+    poll.logger.info("Store zeus proofs")
+    poll.store_zeus_proofs()
+    poll.logger.info("Stored zeus proofs")
 
 @task(ignore_result=True)
 def election_compute_results(election_id):
