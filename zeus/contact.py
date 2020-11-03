@@ -107,6 +107,7 @@ class EmailBackend(ContactBackend):
             "X-Zeus-Election": voter.poll.election.uuid,
             "X-Zeus-Poll": voter.poll.uuid,
             "X-Zeus-Subject": id,
+            "Reply-To": getattr(settings, 'ZEUS_REPLY_TO', settings.SERVER_EMAIL),
         }
         if attachments and len(attachments) > 0:
             name = "%s %s" % (voter.voter_name, voter.voter_surname)
