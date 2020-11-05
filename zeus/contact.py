@@ -118,6 +118,7 @@ class EmailBackend(ContactBackend):
                 return message.send(fail_silently=False), None
             except Exception, e:
                 self.logger.exception(e)
+                voter.poll.logger.error("Failed to send voter email to %s [%s]" % (voter.uuid, str(e)))
                 return None, e
         else:
             return voter.user.send_message(subject, body, headers=headers), None
