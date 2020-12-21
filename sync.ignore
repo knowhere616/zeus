@@ -24,3 +24,4 @@ sync-out.sh
 build
 .vscode
 docker-storage
+local.env
