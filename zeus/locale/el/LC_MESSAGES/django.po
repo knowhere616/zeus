@@ -774,7 +774,7 @@ msgid "A voters import is already in progress."
 msgstr "Εισαγωγή ψηφοφόρων σε εξέλιξη."
 
 msgid "Please accept voters upload terms"
-msgstr "Παρακαλούμε αποδεχθείτε τους όρους χρήσης ανάρτησης εκλογικού καταλόγου"
+msgstr "Παρακαλούμε αποδεχθείτε τους όρους ανάρτησης εκλογικού καταλόγου"
 
 msgid "Invalid encoding"
 msgstr "Μη έγκυρη κωδικοποίηση"
@@ -823,6 +823,10 @@ msgstr "Μη διαθέσιμη διεύθυνση IP πελάτη"
 
 msgid "There are too many requests from your address"
 msgstr "Υπεράριθμες αιτήσεις από τη διεύθυνση IP σας"
+
+msgid ""
+"Your request has been submitted. We will contact you as soon as possible."
+msgstr "Το αίτημα σας έχει καταχωρηθεί. Θα επικοινωνήσουμε σύντομα μαζί σας."
 
 msgid "There are too many emails registered from your address"
 msgstr "Υπεράριθμες διευθύσεις email από τη διεύθυνση IP σας"
