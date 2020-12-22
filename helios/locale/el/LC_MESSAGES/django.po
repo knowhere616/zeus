@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-27 11:41+0200\n"
+"POT-Creation-Date: 2020-12-22 00:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1081,6 +1081,9 @@ msgstr ""
 
 msgid "Encoding"
 msgstr "Κωδικοποίηση"
+
+msgid "The voters data have been  collected legally"
+msgstr "Τα στοιχεία των ψηφοφόρων έχουν συλλεγεί νομίμως"
 
 msgid "Upload file"
 msgstr "Αποστολή αρχείου"

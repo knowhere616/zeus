@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 16:21+0200\n"
+"POT-Creation-Date: 2020-12-22 00:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -772,6 +772,9 @@ msgstr "Latin (iso-8859-1)"
 
 msgid "A voters import is already in progress."
 msgstr "Εισαγωγή ψηφοφόρων σε εξέλιξη."
+
+msgid "Please accept voters upload terms"
+msgstr "Παρακαλούμε αποδεχθείτε τους όρους χρήσης ανάρτησης εκλογικού καταλόγου"
 
 msgid "Invalid encoding"
 msgstr "Μη έγκυρη κωδικοποίηση"

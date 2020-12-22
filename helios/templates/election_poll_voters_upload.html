@@ -55,6 +55,10 @@
             {% endfor %}
         </select>
     </div>
+    <div>
+      <label for="voters_upload_terms">{% trans "The voters data have been  collected legally" %}*</label><br>
+      <input type="checkbox" id="voters_upload_terms" name="voters_upload_terms" value="yes">
+    </div>
     <br /><br />
     <input class="button success" type="submit" value="{% trans "Upload file" %}"/>
 </form>

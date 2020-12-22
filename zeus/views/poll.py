@@ -273,6 +273,12 @@ def voters_upload(request, election, poll):
     set_menu('voters', common_context)
     if request.method == "POST":
         preferred_encoding = request.POST.get('encoding', None)
+        terms_confirmation = request.POST.get('voters_upload_terms', None)
+        if terms_confirmation != "yes":
+            messages.error(request, _("Please accept voters upload terms"))
+            url = poll_reverse(poll, 'voters_upload')
+            return HttpResponseRedirect(url)
+
         if preferred_encoding not in dict(ENCODINGS):
             messages.error(request, _("Invalid encoding"))
             url = poll_reverse(poll, 'voters_upload')
