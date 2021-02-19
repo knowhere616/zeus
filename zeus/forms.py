@@ -37,6 +37,7 @@ from zeus.utils import undecalize, ordered_dict_prepend
 
 from django.core.validators import validate_email
 from zeus.election_modules import ELECTION_MODULES_CHOICES
+from zeus import taxisnet
 
 
 LOG_CHANGED_FIELDS = [
@@ -81,38 +82,42 @@ def setup_editable_fields(form, **value_overrides):
         field = form.fields.get(name)
         if not field:
             continue
-        widget = field.widget
         if not editable:
-            widget.attrs['readonly'] = True
-            widget.attrs['disabled'] = True
-            field.disabled = True # Django 1.9 only
-
-            # creates a value_from_datadict which returns instance value instead
-            # of form data one
-            def _mk_readonly(widget, name, form, override=None):
-                def readonly_value_from_datadict(self, *args, **kwargs):
-                    if override:
-                        value = override(form)
-                    else:
-                        value = getattr(form.instance, name)
-                    if hasattr(widget, 'decompress'):
-                        value = widget.decompress(value)
-                    return value
-                return types.MethodType(readonly_value_from_datadict, widget)
-
-            widget.__dict__['value_from_datadict'] = \
-                _mk_readonly(widget, name, form, value_overrides.get(name, None))
+            disable_field(field, name, form, value_overrides)
 
 
-            def _mk_dummy_clean(form, name):
-                def _dummy_clean(self, *args, **kwargs):
-                    return self.cleaned_data.get(name)
-                return types.MethodType(_dummy_clean, form)
+def disable_field(field, name, form, value_overrides):
+    widget = field.widget
+    widget.attrs['readonly'] = True
+    widget.attrs['disabled'] = True 
+    field.disabled = True # Django 1.9 only
 
-            form.__dict__['clean_%s' % name] = _mk_dummy_clean(form, name)
+    # creates a value_from_datadict which returns instance value instead
+    # of form data one
+    def _mk_readonly(widget, name, form, override=None):
+        def readonly_value_from_datadict(self, *args, **kwargs):
+            if override:
+                value = override(form)
+            else:
+                value = getattr(form.instance, name)
+            if hasattr(widget, 'decompress'):
+                value = widget.decompress(value)
+            return value
+        return types.MethodType(readonly_value_from_datadict, widget)
 
-            if isinstance(widget, forms.CheckboxInput):
-                widget.attrs['disabled'] = True
+    widget.__dict__['value_from_datadict'] = \
+        _mk_readonly(widget, name, form, value_overrides.get(name, None))
+
+
+    def _mk_dummy_clean(form, name):
+        def _dummy_clean(self, *args, **kwargs):
+            return self.cleaned_data.get(name)
+        return types.MethodType(_dummy_clean, form)
+
+    form.__dict__['clean_%s' % name] = _mk_dummy_clean(form, name)
+
+    if isinstance(widget, forms.CheckboxInput):
+        widget.attrs['disabled'] = True
 
 
 class ElectionForm(forms.ModelForm):
@@ -744,7 +749,8 @@ class PollForm(forms.ModelForm):
         'forum_description': ['edit_forum'],
         'forum_starts_at': ['edit_forum'],
         'forum_extended_until': ['edit_forum_extension'],
-        'linked_ref': ['edit_linked_ref']
+        'linked_ref': ['edit_linked_ref'],
+        'taxisnet_auth': ['edit_taxisnet']
     }
 
     formfield_callback = election_form_formfield_cb
@@ -842,12 +848,19 @@ class PollForm(forms.ModelForm):
         auth_help = _('2-factor authentication help text')
         self.fieldsets = {'auth': [auth_title, auth_help, []]}
         self.fieldset_fields = []
-        auth_fields = ['jwt', 'google', 'facebook', 'shibboleth', 'oauth2']
 
         profiles = getattr(settings, 'ZEUS_SHIBBOLETH_PROFILES', {})
         self.shib_profiles = profiles
         extra_auth_fields = {}
+        auth_fields = ['jwt', 'google', 'facebook', 'shibboleth', 'oauth2']
         auth_checks = ['jwt_auth', 'oauth2_thirdparty', 'shibboleth_auth']
+
+        if taxisnet.is_enabled(self.admin) or self.instance.taxisnet_auth:
+            auth_fields.append('taxisnet')
+            auth_checks.append('taxisnet_auth')
+        else:
+            del self.fields['taxisnet_auth']
+
         if profiles:
             for key, data in profiles.items():
                 field_key = 'shibprofile{}'.format(key)
@@ -902,6 +915,16 @@ class PollForm(forms.ModelForm):
                 del self.fields['forum_enabled']
         self.instance.election = self.election
         setup_editable_fields(self)
+        disable_auth = False
+        for f in auth_checks:
+            field = self.fields[f]
+            if getattr(field, 'disabled', False):
+                disable_auth = True
+        if disable_auth:
+            for f in auth_checks:
+                field = self.fields[f]
+                if not getattr(field, 'disabled', False):
+                    disable_field(field, f, self, {})
 
 
     class Meta:
@@ -914,7 +937,7 @@ class PollForm(forms.ModelForm):
                   'oauth2_exchange_url', 'oauth2_confirmation_url',
                   'shibboleth_auth', 'shibboleth_constraints',
                   'forum_enabled', 'forum_description', 'forum_starts_at',
-                  'forum_ends_at', 'forum_extended_until', 'linked_ref')
+                  'forum_ends_at', 'forum_extended_until', 'linked_ref', 'taxisnet_auth')
 
     def iter_fieldset(self, name):
         for field in self.fieldsets[name][2]:

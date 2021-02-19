@@ -134,8 +134,8 @@ def oauth2_login(request):
                 del request.session['oauth2_voter_email']
                 return HttpResponseRedirect(poll_reverse(poll, 'index'))
             else:
-                poll.logger.info("[thirdparty] %s cannot resolve email from %r",
-                                 poll.remote_login_display, data)
+                poll.logger.info("[thirdparty] '%s' cannot resolve from %r",
+                                 unicode(poll.remote_login_display), data)
                 messages.error(request, 'oauth2 user does not match voter')
                 return HttpResponseRedirect(reverse('error',
                                                     kwargs={'code': 400}))

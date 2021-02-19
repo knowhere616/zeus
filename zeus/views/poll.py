@@ -751,6 +751,18 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
         context = {'url': url}
         tpl = 'voter_redirect'
         return render_template(request, tpl, context)
+    elif poll.taxisnet_auth:
+        oauth2 = poll.get_oauth2_module
+        poll.logger.info("[thirdparty] setting taxisnet thirdparty voter " + \
+                         "session data (%s, %s)",
+                         voter.voter_email, voter.uuid)
+        request.session['oauth2_voter_email'] = voter.voter_email
+        request.session['oauth2_voter_uuid'] = voter.uuid
+        url = oauth2.get_code_url()
+        poll.logger.info("[thirdparty] code handshake from %s", url)
+        context = {'url': url}
+        tpl = 'voter_redirect'
+        return render_template(request, tpl, context)
     else:
         user = auth.ZeusUser(voter)
         user.authenticate(request)

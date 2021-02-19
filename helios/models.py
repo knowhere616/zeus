@@ -825,6 +825,8 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
 
   voters_last_notified_at = models.DateTimeField(null=True, default=None)
   index = models.PositiveIntegerField(default=1)
+  
+  taxisnet_auth = models.BooleanField(default=False, verbose_name=_("Taxisnet login"))
 
   # voters oauth2 authentication
   oauth2_thirdparty = models.BooleanField(default=False, verbose_name=_("Oauth2 login"))
@@ -930,7 +932,7 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
 
   @property
   def remote_login(self):
-      return self.oauth2_thirdparty or self.jwt_auth or self.shibboleth_auth
+      return self.oauth2_thirdparty or self.jwt_auth or self.shibboleth_auth or self.taxisnet_auth
 
   @property
   def shibboleth_profile(self):
@@ -952,6 +954,8 @@ class Poll(PollTasks, HeliosModel, PollFeatures):
           return _(self.shibboleth_profile.get('label', "Shibboleth authentication"))
       if self.shibboleth_auth:
           return _("Shibboleth authentication")
+      if self.taxisnet_auth:
+          return _("Taxisnet authentication")
       return None
 
   def reset_logger(self):

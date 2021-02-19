@@ -287,6 +287,10 @@ class PollFeatures(FeaturesMixin):
         return self.election.feature_can_add_poll
 
     @poll_feature()
+    def _feature_edit_taxisnet(self):
+        return not self.feature_frozen
+
+    @poll_feature()
     def _feature_edit_linked_ref(self):
         existing = self.pk
         has_voters = existing

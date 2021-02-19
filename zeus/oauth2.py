@@ -3,6 +3,7 @@ import urllib, urllib2
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+import xml.etree.ElementTree as ET
 
 from helios.models import Poll
 
@@ -13,6 +14,8 @@ def oauth2_module(cls):
     return cls
 
 def get_oauth2_module(poll):
+    if poll.taxisnet_auth:
+        return OAUTH2_REGISTRY['taxisnet'](poll)
     return OAUTH2_REGISTRY.get(poll.oauth2_type)(poll)
 
 
@@ -32,25 +35,32 @@ class Oauth2Base(object):
         self.poll = poll
         self.exchange_url = poll.oauth2_exchange_url
         self.confirmation_url = self.poll.oauth2_confirmation_url
-        callback_url = oauth2_callback_url()
+        self.callback_url = oauth2_callback_url()
+        self.client_id = self.poll.oauth2_client_id
+        self.client_secret = self.poll.oauth2_client_secret
+        self.state = self.poll.uuid
+        self.code_url = self.poll.oauth2_code_url
+        self._update_request_data()
+    
+    def _update_request_data(self):
         self.code_post_data = {
             'response_type': 'code',
-            'client_id': poll.oauth2_client_id,
-            'redirect_uri': callback_url,
-            'state': poll.uuid
+            'client_id': self.client_id,
+            'redirect_uri': self.callback_url,
+            'state': self.state
             }
 
         self.exchange_data = {
-            'client_id': poll.oauth2_client_id,
-            'client_secret': poll.oauth2_client_secret,
-            'redirect_uri': callback_url,
-            'grant_type': 'authorization_code',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'redirect_uri': self.callback_url,
+            'grant_type': 'authorization_code'
             }
 
     def get_code_url(self):
         code_data = self.code_post_data
         encoded_data = urllib.urlencode(code_data)
-        url = "{}?{}".format(self.poll.oauth2_code_url, encoded_data)
+        url = "{}?{}".format(self.code_url, encoded_data)
         return url
 
     def can_exchange(self, request):
@@ -177,3 +187,66 @@ class Oauth2Other(Oauth2Base):
         if response_email == self.session_email:
             return True, data
         return False, data
+
+@oauth2_module
+class Oauth2Taxisnet(Oauth2Base):
+
+    type_id = 'taxisnet'
+
+    def __init__(self, poll):
+        super(Oauth2Taxisnet, self).__init__(poll)
+        data = getattr(settings, 'TAXISNET_INSTITUTIONS', {})
+        inst_key = poll.election.institution.name
+        config = data.get(inst_key, {})
+        if config.get('test', True):
+            self.exchange_url = 'https://test.gsis.gr/oauth2server/oauth/token'
+            self.code_url = 'https://test.gsis.gr/oauth2server/oauth/authorize'
+            self.confirmation_url = 'https://test.gsis.gr/oauth2server/userinfo?format=xml'
+        else:
+            self.exchange_url = 'https://www1.gsis.gr/oauth2server/oauth/token'
+            self.code_url = 'https://www1.gsis.gr/oauth2server/oauth/authorize'
+            self.confirmation_url = 'https://www1.gsis.gr/oauth2server/userinfo?format=xml'
+        self.client_id = config.get('client_id')
+        self.client_secret = config.get('secret')
+        self.callback_url = 'https://zeus.grnet.gr/zeus/auth/auth/oauth2'
+        self._update_request_data()
+
+    def set_login_hint(self, email):
+        self.code_post_data['login_hint'] = email
+
+    def exchange(self, url):
+        self.poll.logger.info("[taxisnet] Exchange url %s", url)
+        response = urllib2.urlopen(url[0], url[1])
+        data = json.loads(response.read())
+        self.access_token = data['access_token']
+
+    def confirm_email(self):
+        self.poll.logger.info("[taxisnet] Confirm taxid via %s", self.confirmation_url)
+        get_params = 'access_token={}'.format(self.access_token)
+        if '?' in self.confirmation_url:
+            get_url = '{}&{}'.format(self.confirmation_url, get_params)
+        else:
+            get_url = '{}?{}'.format(self.confirmation_url, get_params)
+        response = urllib2.urlopen(get_url)
+        try:
+            resp = response.read()
+        except Exception as e:
+            self.poll.logger.error("[taxisnet] failed to read user profile")
+            self.poll.logger.exception(e)
+
+        self.poll.logger.info("[taxisnet] resolved user profile (raw) %r", resp)
+        profile = ET.fromstring(resp)[0].attrib
+        self.poll.logger.info("[taxisnet] resolved user profile (json) %r", profile)
+        taxid = profile.get('taxid', '').strip()
+
+        confirmed = False
+        if not taxid or len(taxid) == 0:
+            self.poll.logger.error('[taxisnet] cannot resolve taxid %r' % profile)
+            confirmed = False
+        else:
+            from helios.models import Voter
+            voter = Voter.objects.get(uuid=self.voter_uuid)
+            confirmed = voter.voter_login_id == taxid
+            if not confirmed:
+                self.poll.logger.error('[taxisnet] failed to match zeus id (%r) to taxisnet id (%r)' % (voter.voter_login_id, taxid))
+        return confirmed, profile
