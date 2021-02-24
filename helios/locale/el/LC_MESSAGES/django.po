@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-22 00:07+0000\n"
+"POT-Creation-Date: 2021-02-25 00:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,6 +170,9 @@ msgstr "Όνομα αντιστοιχίας κάλπης"
 msgid "Poll name"
 msgstr "Όνομα κάλπης"
 
+msgid "Taxisnet login"
+msgstr "Σύνδεση με ΓΓΠΣ (taxisnet)"
+
 msgid "Oauth2 login"
 msgstr "Σύνδεση με Oauth2"
 
@@ -203,6 +206,9 @@ msgstr "Σύνδεση με Oauth2 (%s)"
 
 msgid "Shibboleth authentication"
 msgstr "Σύνδεση με ακαδημαϊκό λογαριασμό (shibboleth)"
+
+msgid "Taxisnet authentication"
+msgstr "Σύνδεση με ΓΓΠΣ"
 
 msgid "Prepare poll questions"
 msgstr "Ορισμός των ερωτήσεων της κάλπης"

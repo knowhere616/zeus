@@ -122,7 +122,7 @@ def oauth2_login(request):
     if oauth2.can_exchange(request):
         oauth2.exchange(oauth2.get_exchange_url())
         try:
-            confirmed, data = oauth2.confirm_email()
+            confirmed, data, err = oauth2.confirm()
             if confirmed:
                 voter = Voter.objects.get(poll__uuid=poll_uuid,
                                           uuid=oauth2.voter_uuid)
@@ -136,7 +136,7 @@ def oauth2_login(request):
             else:
                 poll.logger.info("[thirdparty] '%s' cannot resolve from %r",
                                  unicode(poll.remote_login_display), data)
-                messages.error(request, 'oauth2 user does not match voter')
+                messages.error(request, err or 'Authentication provider user does not match voter details')
                 return HttpResponseRedirect(reverse('error',
                                                     kwargs={'code': 400}))
         except urllib2.HTTPError, e:

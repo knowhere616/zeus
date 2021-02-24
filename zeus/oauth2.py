@@ -3,6 +3,7 @@ import urllib, urllib2
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 import xml.etree.ElementTree as ET
 
 from helios.models import Poll
@@ -103,7 +104,7 @@ class Oauth2Google(Oauth2Base):
         self.token_type = data['token_type']
         self.expires_in = data['expires_in']
 
-    def confirm_email(self):
+    def confirm(self):
         self.poll.logger.info("[thirdparty-google] Confirm email at %s", self.confirmation_url)
         get_params = 'access_token={}'.format(self.access_token)
         get_url = '{}?{}'.format(self.confirmation_url, get_params)
@@ -118,8 +119,8 @@ class Oauth2Google(Oauth2Base):
         if 'emails' in data:
             response_email = data['emails'][0]['value']
         if response_email == self.session_email:
-            return True, data
-        return False, data
+            return True, data, None
+        return False, data, None
 
 
 @oauth2_module
@@ -141,15 +142,15 @@ class Oauth2FB(Oauth2Base):
             if 'expires' in item:
                 self.expires = item.split('=')[1]
 
-    def confirm_email(self):
+    def confirm(self):
         get_params = 'fields=email&access_token={}'.format(self.access_token)
         get_url = '{}?{}'.format(self.confirmation_url, get_params)
         response = urllib2.urlopen(get_url)
         data = json.loads(response.read())
         response_email = data['email']
         if response_email == self.session_email:
-            return True, data
-        return False, data
+            return True, data, None
+        return False, data, None
 
 
 @oauth2_module
@@ -170,7 +171,7 @@ class Oauth2Other(Oauth2Base):
         self.expires_in = data['expires_in']
         self.poll.logger.info("[thirdparty-other] exchanged oauth2 data %r", data)
 
-    def confirm_email(self):
+    def confirm(self):
         self.poll.logger.info("[thirdparty-other] Confirm email at %r", self.confirmation_url)
         data = urllib.urlencode({'access_token': self.access_token})
         self.poll.logger.info("[thirdparty-other] Confirm data %r", data)
@@ -185,8 +186,8 @@ class Oauth2Other(Oauth2Base):
         if 'emails' in data:
             response_email = data['emails'][0]['value']
         if response_email == self.session_email:
-            return True, data
-        return False, data
+            return True, data, None
+        return False, data, None
 
 @oauth2_module
 class Oauth2Taxisnet(Oauth2Base):
@@ -220,7 +221,7 @@ class Oauth2Taxisnet(Oauth2Base):
         data = json.loads(response.read())
         self.access_token = data['access_token']
 
-    def confirm_email(self):
+    def confirm(self):
         self.poll.logger.info("[taxisnet] Confirm taxid via %s", self.confirmation_url)
         get_params = 'access_token={}'.format(self.access_token)
         if '?' in self.confirmation_url:
@@ -240,6 +241,7 @@ class Oauth2Taxisnet(Oauth2Base):
         taxid = profile.get('taxid', '').strip()
 
         confirmed = False
+        err = None
         if not taxid or len(taxid) == 0:
             self.poll.logger.error('[taxisnet] cannot resolve taxid %r' % profile)
             confirmed = False
@@ -249,4 +251,5 @@ class Oauth2Taxisnet(Oauth2Base):
             confirmed = voter.voter_login_id == taxid
             if not confirmed:
                 self.poll.logger.error('[taxisnet] failed to match zeus id (%r) to taxisnet id (%r)' % (voter.voter_login_id, taxid))
-        return confirmed, profile
+                err = _("Tax registration number returned by authentication provider does not match logged-in voter. Please contact election administrator.")
+        return confirmed, profile, err
