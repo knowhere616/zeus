@@ -353,7 +353,7 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
                                      % (self.e_uuid, p_uuid)
             self.c.post(
                 upload_voters_location,
-                {'voters_file': file(voter_files[p_uuid])}
+                {'voters_file': file(voter_files[p_uuid]), 'voters_upload_terms': 'yes'}
                 )
             self.c.post(upload_voters_location, {'confirm_p': 1})
             e = Election.objects.get(uuid=self.e_uuid)
@@ -381,7 +381,7 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
                 % (self.e_uuid, p_uuid)
             r = self.c.post(
                 upload_voters_location,
-                {'voters_file': file(voter_files[p_uuid])}
+                {'voters_file': file(voter_files[p_uuid]), 'voters_upload_terms': 'yes'}
                 )
             r = self.c.post(upload_voters_location, {'confirm_p': 1})
             self.assertEqual(r.status_code, 302)
@@ -417,6 +417,7 @@ class TestElectionBase(SetUpAdminAndClientMixin, TestCase):
             self.c.post(
                 upload_voters_location,
                 {'voters_file': file(voter_files[p_uuid]),
+                 'voters_upload_terms': 'yes',
                  'encoding': 'iso-8859-7'}
                 )
             self.c.post(upload_voters_location, {'confirm_p': 1, 'encoding': 'iso-8859-7'})
