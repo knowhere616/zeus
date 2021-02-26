@@ -69,6 +69,8 @@ from zeus import help_texts as help
 from zeus.log import init_election_logger, init_poll_logger
 from zeus.utils import decalize, undecalize, CSVReader, safe_unlink
 
+import stdnum.gr.vat
+
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +79,13 @@ ELECTION_MODEL_VERSION = 1
 
 
 validate_email = lambda email,ln: django_validate_email(email)
+
+def validate_afm(afm):
+    try:
+        stdnum.gr.vat.validate(afm)
+    except Exception, e:
+        msg = e.message
+        raise Exception("Invalid AFM: %r" % msg)
 
 class HeliosModel(TaskModel, datatypes.LDObjectContainer):
 
@@ -1650,7 +1659,7 @@ def get_voter_reader(voter_data, preferred_encoding=None):
     return reader
 
 def iter_voter_data(voter_data, email_validator=validate_email,
-                    preferred_encoding=None):
+                    voter_id_validator=None, preferred_encoding=None):
     reader = get_voter_reader(voter_data, preferred_encoding)
 
     line = 0
@@ -1670,7 +1679,17 @@ def iter_voter_data(voter_data, email_validator=validate_email,
             m = _("There must be at least two fields, Registration ID and Email")
             raise ValidationError(m)
 
-        return_dict['voter_id'] = voter_fields[0]
+        voter_id = voter_fields[0]
+        if voter_id_validator:
+            try:
+                voter_id_validator(voter_id)
+            except Exception, e:
+                m = _(e.message)
+                err = ValidationError(m)
+                setattr(err, 'line', line)
+                raise err
+        return_dict['voter_id'] = voter_id
+
         email = voter_fields[1].strip()
         if len(email) > 0:
             email_validator(email, line)
@@ -1728,7 +1747,6 @@ def iter_voter_data(voter_data, email_validator=validate_email,
         if len(voter_fields) > 7:
             m = _("Invalid voter data at line %s") %line
             raise ValidationError(m)
-
 
 class VoterFile(models.Model):
   """
@@ -1888,7 +1906,12 @@ class VoterFile(models.Model):
             err = ValidationError(e.message)
             setattr(err, 'line', ln)
             raise err
-    reader = iter_voter_data(voter_data, email_validator=email_validator, preferred_encoding=preferred_encoding)
+    voter_id_validator = None
+    if poll.taxisnet_auth:
+        voter_id_validator = validate_afm
+    reader = iter_voter_data(voter_data, email_validator=email_validator,
+        voter_id_validator=voter_id_validator,
+        preferred_encoding=preferred_encoding)
 
     last_alias_num = poll.last_alias_num
 
