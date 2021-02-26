@@ -15,7 +15,12 @@ RUN apt-get install -y python-pyparsing python-reportlab python-reportlab-accel
 RUN apt-get install -y python-stdnum
 RUN apt-get install -y python-yaml python-pip
 RUN apt-get install -y gunicorn
+
+# dev related
 RUN apt-get install -y vim ipython
+RUN apt-get install python-pytest
+RUN apt-get install python-freezegun
+RUN pip install pytest-django==2.7.0
 
 RUN apt-get install -y wget
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb

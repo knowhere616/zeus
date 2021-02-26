@@ -23,6 +23,7 @@ services:
       - ./docker-storage/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: 'zeus'
+    command: -c fsync=off
   web:
     build:
       context: .
