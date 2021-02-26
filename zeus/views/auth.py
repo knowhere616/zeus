@@ -138,18 +138,18 @@ def oauth2_login(request):
                                  unicode(poll.remote_login_display), data)
                 messages.error(request, err or 'Authentication provider user does not match voter details')
                 return HttpResponseRedirect(reverse('error',
-                                                    kwargs={'code': 400}))
+                                                    kwargs={'code': 401}))
         except urllib2.HTTPError, e:
             poll.logger.exception(e)
             messages.error(request, 'oauth2 error')
             return HttpResponseRedirect(reverse('error',
-                                                kwargs={'code': 400}))
+                                                kwargs={'code': 401}))
             pass
     else:
         poll.logger.info("[thirdparty] oauth2 '%s' can_exchange failed",
                          poll.remote_login_display)
         messages.error(request, 'oauth2 exchange failed')
-        return HttpResponseRedirect(reverse('error', kwargs={'code': 400}))
+        return HttpResponseRedirect(reverse('error', kwargs={'code': 401}))
 
 
 @auth.unauthenticated_user_required

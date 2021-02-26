@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block page_top %}
-<h2 class="error alert">{% trans "Something went wrong !!!" %}</h2>
+<h2 class="error alert">{{ title }}</h2>
 {% if error_message %}
 <div class="messages">
     <div class="label medium {{ error_type }}">

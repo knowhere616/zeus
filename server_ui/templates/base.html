@@ -105,7 +105,7 @@
             {% if messages %}
             <div id="site-messages" class="messages">
               {% for message in messages %}
-              <div class="label medium {{ message.tags }}">{{ message }}</div>
+              <div style="white-space: pre-wrap;" class="label medium {{ message.tags }}">{{ message }}</div>
               {% endfor %}
               <br />
             </div>

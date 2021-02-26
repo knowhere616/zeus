@@ -426,10 +426,16 @@ def demo(request):
 def error(request, code=None, message=None, type='error'):
     user = getattr(request, 'zeususer', ZeusUser.from_request(request))
     messages_len = len(messages.get_messages(request))
+    
     if not messages_len and not message:
         return HttpResponseRedirect(reverse('home'))
 
+    titles_map = {
+        '401': _('Authentication error')
+    }
+    title = titles_map.get(code, 'Something went wrong !!!')
     response = render_template(request, "zeus/error", {
+        'title': _(title),
         'code': code,
         'error_message': message,
         'error_type': type,
