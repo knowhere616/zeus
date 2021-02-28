@@ -861,3 +861,6 @@ msgstr ""
 
 msgid "The requested page was not found."
 msgstr "Η σελίδα που ζητήσατε δεν βρέθηκε."
+
+msgid "Other elections guides"
+msgstr "Οδηγίες για άλλες ψηφοφορίες"

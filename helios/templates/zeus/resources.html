@@ -35,6 +35,21 @@
             </li>
           {% endfor %}
         </ul>
+        </li>
+        {% if guides.other and guides.other|length %}
+          <li>{% trans "Other elections guides" %}
+          <ul>
+            {% for guide in guides.other %}
+            <li><a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.0.ext }}">
+                    {{ guide.label }}{% if guide.sublabel %} "{{ guide.sublabel }}"{% endif %}
+                  </a>
+                  {% if guide.extensions.1 %}
+                  [<a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.1.ext }}">{{ guide.extensions.1.label }}</a>]
+                  {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
         {% block extra_guides %}
         {% endblock %}
     </ul>

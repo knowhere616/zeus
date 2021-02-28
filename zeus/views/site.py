@@ -217,6 +217,10 @@ class Guides(object):
     def voter(self):
         return self.get_guides('voter')
 
+    @property
+    def other(self):
+        return self.get_guides('other')
+
 
 site_guides = Guides()
 
