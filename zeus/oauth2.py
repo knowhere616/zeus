@@ -1,5 +1,6 @@
 import json
 import urllib, urllib2
+from zeus.taxisnet import resolve_config
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -63,6 +64,9 @@ class Oauth2Base(object):
         encoded_data = urllib.urlencode(code_data)
         url = "{}?{}".format(self.code_url, encoded_data)
         return url
+
+    def can_login(self, request):
+        return True
 
     def can_exchange(self, request):
         if (request.GET.get('code') and request.GET.get('state') and
@@ -196,10 +200,13 @@ class Oauth2Taxisnet(Oauth2Base):
 
     def __init__(self, poll):
         super(Oauth2Taxisnet, self).__init__(poll)
-        data = getattr(settings, 'TAXISNET_INSTITUTIONS', {})
-        inst_key = poll.election.institution.name
-        config = data.get(inst_key, {})
-        if config.get('test', True):
+        config = resolve_config(poll) or {}
+        self.config = config
+        if not config:
+            self.exchange_url = '/'
+            self.code_url = '/'
+            self.confirmation_url = '/'
+        elif config.get('test', True):
             self.exchange_url = 'https://test.gsis.gr/oauth2server/oauth/token'
             self.code_url = 'https://test.gsis.gr/oauth2server/oauth/authorize'
             self.confirmation_url = 'https://test.gsis.gr/oauth2server/userinfo?format=xml'
@@ -253,3 +260,10 @@ class Oauth2Taxisnet(Oauth2Base):
                 self.poll.logger.error('[taxisnet] failed to match zeus id (%r) to taxisnet id (%r)' % (voter.voter_login_id, taxid))
                 err = _("Tax registration number returned by authentication provider does not match logged-in voter. Please contact election administrator.")
         return confirmed, profile, err
+
+    def can_login(self, request):
+        return self.config
+
+    def can_exchange(self, request):
+        return self.config and \
+            super(Oauth2Taxisnet, self).can_exchange(request)

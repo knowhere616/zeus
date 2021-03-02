@@ -728,6 +728,9 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
 
     if poll.oauth2_thirdparty:
         oauth2 = poll.get_oauth2_module
+        if not oauth2.can_login(request):
+            messages.error(request, "oauth2 disabled")
+            return HttpResponseRedirect(reverse('error', kwargs={'code': 400}))
         if oauth2.type_id == 'google':
             oauth2.set_login_hint(voter.voter_email)
         poll.logger.info("[thirdparty] setting thirdparty voter " + \
@@ -753,6 +756,10 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
         return render_template(request, tpl, context)
     elif poll.taxisnet_auth:
         oauth2 = poll.get_oauth2_module
+        if not oauth2.can_login(request):
+            url = reverse('error', kwargs={'code': 400})
+            messages.error(request, "oauth2 disabled")
+            return HttpResponseRedirect(url)
         poll.logger.info("[thirdparty] setting taxisnet thirdparty voter " + \
                          "session data (%s, %s)",
                          voter.voter_email, voter.uuid)
