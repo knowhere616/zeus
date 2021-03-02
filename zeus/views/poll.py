@@ -740,7 +740,7 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
         request.session['oauth2_voter_uuid'] = voter.uuid
         url = oauth2.get_code_url()
         poll.logger.info("[thirdparty] code handshake from %s", url)
-        context = {'url': url}
+        context = {'url': url, 'hide_login_link': True}
         tpl = 'voter_redirect'
         return render_template(request, tpl, context)
     elif poll.shibboleth_auth:
@@ -751,7 +751,7 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
         request.session['shibboleth_voter_email'] = voter.voter_email
         request.session['shibboleth_voter_uuid'] = voter.uuid
         url = auth.make_shibboleth_login_url(endpoint)
-        context = {'url': url}
+        context = {'url': url, 'hide_login_link': True}
         tpl = 'voter_redirect'
         return render_template(request, tpl, context)
     elif poll.taxisnet_auth:
@@ -767,7 +767,7 @@ def voter_booth_login(request, election, poll, voter_uuid, voter_secret):
         request.session['oauth2_voter_uuid'] = voter.uuid
         url = oauth2.get_code_url()
         poll.logger.info("[thirdparty] code handshake from %s", url)
-        context = {'url': url}
+        context = {'url': url, 'hide_login_link': True}
         tpl = 'voter_redirect'
         return render_template(request, tpl, context)
     else:
