@@ -30,6 +30,6 @@ services:
       dockerfile: ./docker/Dockerfile.nginx.dev
     image: grnet/zeus-nginx:latest
     ports:
-      - "80:80"
+      - "8081:8081"
     depends_on:
       - app

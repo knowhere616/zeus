@@ -18,8 +18,8 @@ RUN apt-get install -y gunicorn
 
 # dev related
 RUN apt-get install -y vim ipython
-RUN apt-get install python-pytest
-RUN apt-get install python-freezegun
+RUN apt-get install -y python-pytest
+RUN apt-get install -y python-freezegun
 RUN pip install pytest-django==2.7.0
 
 RUN apt-get install -y wget
