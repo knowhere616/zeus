@@ -13,12 +13,12 @@
         <li>{% trans "Election admin guides" %}
         <ul>
           {% for guide in guides.admin %}
-          <li><a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.0.ext }}">
+          <li><a href="{{ guide.url }}">
                   {{ guide.label }}{% if guide.sublabel %} "{{ guide.sublabel }}"{% endif %}
                 </a>
-                {% if guide.extensions.1 %}
-                [<a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.1.ext }}">{{ guide.extensions.1.label }}</a>]
-                {% endif %}
+                {% for e in guide.extensions %}
+                [<a href="{{ e.url }}">{{ e.label }}</a>]
+                {% endfor %}
             </li>
           {% endfor %}
         </ul>
@@ -26,12 +26,12 @@
         <li>{% trans "Voter guides" %}
         <ul>
           {% for guide in guides.voter %}
-          <li><a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.0.ext }}">
+          <li><a href="{{ guide.url }}">
                   {{ guide.label }}{% if guide.sublabel %} "{{ guide.sublabel }}"{% endif %}
                 </a>
-                {% if guide.extensions.1 %}
-                [<a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.1.ext }}">{{ guide.extensions.1.label }}</a>]
-                {% endif %}
+                {% for e in guide.extensions %}
+                [<a href="{{ e.url }}">{{ e.label }}</a>]
+                {% endfor %}
             </li>
           {% endfor %}
         </ul>
@@ -40,12 +40,12 @@
           <li>{% trans "Other elections guides" %}
           <ul>
             {% for guide in guides.other %}
-            <li><a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.0.ext }}">
+            <li><a href="{{ guide.url }}">
                     {{ guide.label }}{% if guide.sublabel %} "{{ guide.sublabel }}"{% endif %}
                   </a>
-                  {% if guide.extensions.1 %}
-                  [<a href="{{ STATIC_URL }}manuals/{{ guide.fname }}{{ guide.lang }}.{{ guide.extensions.1.ext }}">{{ guide.extensions.1.label }}</a>]
-                  {% endif %}
+                  {% for e in guide.extensions %}
+                  [<a href="{{ e.url }}">{{ e.label }}</a>]
+                  {% endfor %}
               </li>
             {% endfor %}
           </ul>

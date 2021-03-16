@@ -188,16 +188,28 @@ class Guides(object):
             parts = ext.split(":")
             return {'ext': parts[0], 'label': _(parts[1])}
 
-        extensions = map(make_ext, extensions)
         fallback = getattr(settings, 'I18N_TEMPLATES_FALLBACK_LANGUAGE', 'en')
+        static = getattr(settings, 'STATIC_URL')
         for language in languages:
+            exts = map(make_ext, extensions)
+            lang = "_%s" % language if language != 'el' else ''
+            base_url = static + "manuals/" + fname + lang + '.'
+            if not exts:
+                exts = [{"ext": '', "label": ''}]
+            url = base_url + exts[0].get('ext')
+            if fname.startswith("http"):
+                url = fname
+            for extension in exts:
+                extension["url"] = base_url + extension.get('ext')
+
             guides[language].append({
                 "label": _(label),
                 "sublabel": _(sublabel),
                 "fname": fname,
                 "languages": languages,
-                "extensions": extensions,
-                "lang": "_%s" % language if language != 'el' else ''
+                "extensions": exts[1:],
+                "lang": lang,
+                "url": url,
             })
 
     def get_guides(self, cat, lang=None):
