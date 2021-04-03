@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-21 11:48+0200\n"
+"POT-Creation-Date: 2021-04-03 03:06+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,6 +68,9 @@ msgstr "Ηλεκτρονικές Ψηφοφορίες «Ζευς»"
 
 msgid "Form data have changed!"
 msgstr "Τα στοιχεία της φόρμας έχουν τροποποιηθεί!"
+
+msgid "Δήλωση Ιδιωτικότητας"
+msgstr "Privacy statement"
 
 msgid "Terms of use"
 msgstr "Όροι χρήσης"

@@ -1,0 +1,8 @@
+.form-field-help-text p {
+  margin: 0;
+}
+.form-field input[type=checkbox] {
+  margin: 0;
+  position: relative;
+  top: -5px;
+}

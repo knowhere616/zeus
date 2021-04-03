@@ -30,7 +30,7 @@ from django.forms.formsets import BaseFormSet
 from helios.models import Election, Poll, Trustee, Voter
 from heliosauth.models import User
 
-from zeus.utils import extract_trustees, election_trustees_to_text
+from zeus.utils import extract_trustees, election_trustees_to_text, resolve_terms_help_text
 from zeus.widgets import JqSplitDateTimeField, JqSplitDateTimeWidget
 from zeus import help_texts as help
 from zeus.utils import undecalize, ordered_dict_prepend
@@ -38,6 +38,8 @@ from zeus.utils import undecalize, ordered_dict_prepend
 from django.core.validators import validate_email
 from zeus.election_modules import ELECTION_MODULES_CHOICES
 from zeus import taxisnet
+
+from zeus.utils import parse_markdown_unsafe
 
 
 LOG_CHANGED_FIELDS = [
@@ -130,6 +132,7 @@ class ElectionForm(forms.ModelForm):
     remote_mixes = forms.BooleanField(label=_('Multiple mixnets'),
                                       required=False,
                                       help_text=help.remote_mixes)
+    terms_consent = forms.BooleanField(label=_('Consent to service terms'), required=True, help_text=None)
 
     FIELD_REQUIRED_FEATURES = {
         'trustees': ['edit_trustees'],
@@ -157,6 +160,7 @@ class ElectionForm(forms.ModelForm):
     def __init__(self, owner, institution, *args, **kwargs):
         self.institution = institution
         self.owner = owner
+        self.terms_text = None
 
         if kwargs.get('lang'):
             lang = kwargs.pop('lang')
@@ -189,6 +193,16 @@ class ElectionForm(forms.ModelForm):
             for field in LOG_CHANGED_FIELDS:
                 self._initial_data[field] = self.initial[field]
             self.creating = False
+
+        # user-specific terms text
+        self.terms_text = parse_markdown_unsafe(_(resolve_terms_help_text(owner)))
+        self.fields['terms_consent'].help_text = self.terms_text
+        # terms consent is required and only available during election creation
+        # otherwise, enforce value to True and disable the checkbox input
+        if not self.creating:
+            self.fields['terms_consent'].widget.attrs['disabled'] = True
+            self.fields['terms_consent'].widget.attrs['checked'] = True
+
 
         eligible_types = owner.eligible_election_types
         if not self.creating and self.instance:

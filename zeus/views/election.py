@@ -54,7 +54,9 @@ def add_or_update(request, election=None):
                 election.admins.add(user)
             if election_form.creating:
                 election.logger.info("Election created")
-                msg = "New election created"
+                # report terms text
+                election.logger.info(u"Terms accepted: '%s'", election_form.terms_text)
+                msg = "New election created. \n\nTerms accepted: %s" % election_form.terms_text
                 subject = "New Zeus election"
                 election.notify_admins(msg=msg, subject=subject)
             if not election.has_helios_trustee():

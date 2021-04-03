@@ -4,6 +4,8 @@ import os
 import json
 import bleach
 import urlparse
+import markdown
+import re
 
 from cStringIO import StringIO
 from csv import (Sniffer, excel, Error as csvError,
@@ -531,3 +533,20 @@ def resolve_ip(request):
 def safe_unlink(path):
     if os.path.exists(path):
         os.unlink(path)
+
+
+def resolve_terms_help_text(user):
+    config = getattr(settings, 'TERMS_CONSENT_TEXT_MAP', {})
+    terms_text = None
+    for group in user.user_groups.filter():
+        terms_text = config.get(group.name, terms_text)
+    _ = lambda x: x
+    return terms_text or _('I consent that i have read and agree to the [terms of the Zeus service](/zeus/terms/).')
+
+
+def parse_markdown_unsafe(text):
+    md = markdown.Markdown(
+        output_format='html5',
+        extensions=[])
+    html = md.convert(text)
+    return re.sub("(^<P>|</P>$)", "", html, flags=re.IGNORECASE)
