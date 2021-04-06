@@ -541,7 +541,8 @@ def resolve_terms_help_text(user):
     for group in user.user_groups.filter():
         terms_text = config.get(group.name, terms_text)
     _ = lambda x: x
-    return terms_text or _('I consent that i have read and agree to the [terms of the Zeus service](/zeus/terms/).')
+    dflt = _('I consent that I have read, understood, and agree to the [service terms](/zeus/terms/).')
+    return terms_text or dflt
 
 
 def parse_markdown_unsafe(text):

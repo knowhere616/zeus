@@ -132,7 +132,9 @@ class ElectionForm(forms.ModelForm):
     remote_mixes = forms.BooleanField(label=_('Multiple mixnets'),
                                       required=False,
                                       help_text=help.remote_mixes)
-    terms_consent = forms.BooleanField(label=_('Consent to service terms'), required=True, help_text=None)
+    terms_consent = forms.BooleanField(label=_('Terms consent'), 
+                                       required=True, 
+                                       help_text=None)
 
     FIELD_REQUIRED_FEATURES = {
         'trustees': ['edit_trustees'],
