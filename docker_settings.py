@@ -31,7 +31,7 @@ DATABASES = {
 TIME_ZONE = env('ZEUS_TIMEZONE', default='Europe/Athens')
 
 LANGUAGE_CODE = env('ZEUS_LANGUAGE_CODE', default='el-gr')
-LANGUAGES = list_of_tuples('ZEUS_LANGUAGES', default=(('el', 'Greek'),))
+LANGUAGES = list_of_tuples('ZEUS_LANGUAGES', default=(('el', 'Greek'),('en', 'English')))
 
 SECRET_KEY = env('ZEUS_SECRET_KEY')
 
