@@ -204,6 +204,7 @@ class ElectionForm(forms.ModelForm):
         if not self.creating:
             self.fields['terms_consent'].widget.attrs['disabled'] = True
             self.fields['terms_consent'].widget.attrs['checked'] = True
+            self.fields['terms_consent'].required = False
 
 
         eligible_types = owner.eligible_election_types
