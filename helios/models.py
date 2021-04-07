@@ -315,6 +315,7 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
     remote_mixing_finished_at = models.DateTimeField(default=None, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    terms_consent_at = models.DateTimeField(auto_now_add=True, null=True, default=None)
     modified_at = models.DateTimeField(auto_now=True)
     canceled_at = models.DateTimeField(default=None, null=True)
     cancelation_reason = models.TextField(default="")
@@ -2651,7 +2652,7 @@ class Trustee(HeliosModel, TrusteeFeatures):
                   _(u'Verify trustee key'),
                   _(u'Partially decrypt votes')]
 
-    def send_url_via_mail(self, msg=''):
+    def send_url_via_mail(self, msg='', override_email=None):
         """
         Notify trustee
         """
@@ -2671,12 +2672,13 @@ class Trustee(HeliosModel, TrusteeFeatures):
             body = render_to_string("trustee_email.txt", context)
             subject = render_to_string("trustee_email_subject.txt", context)
 
+            send_to = override_email or self.email
             send_mail(subject.replace("\n", ""),
                       body,
                       settings.SERVER_EMAIL,
-                      ["%s <%s>" % (self.name, self.email)],
+                      ["%s <%s>" % (self.name, send_to)],
                       fail_silently=False)
-            self.election.logger.info("Trustee %r login url send", self.email)
+            self.election.logger.info("Trustee %r login url send via %r", self.email, send_to)
             self.last_notified_at = datetime.datetime.now()
             self.save()
 

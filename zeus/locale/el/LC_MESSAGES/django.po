@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-26 17:06+0200\n"
+"POT-Creation-Date: 2021-04-03 03:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,6 +113,9 @@ msgstr "Εφορευτική επιτροπή"
 
 msgid "Multiple mixnets"
 msgstr "Πολλαπλές μίξεις"
+
+msgid "Terms consent"
+msgstr "Αποδοχή όρων"
 
 msgid "Set the language that will be used for email messages"
 msgstr "Επιλέξτε τη γλώσσα που θα χρησιμοποιηθεί για τα μηνύματα των email"
@@ -730,6 +733,12 @@ msgstr "Σύνολο καλπών"
 msgid "Administrators"
 msgstr "Διαχειριστές"
 
+msgid ""
+"I consent that I have read, understood, and agree to the [service terms](/"
+"zeus/terms/)."
+msgstr ""
+"Αποδέχομαι ότι έχω διαβάσει και συμφωνώ με τους [όρους χρήσης της υπηρεσίας](/zeus/terms/)."
+
 msgid "Uninitialized shibboleth session."
 msgstr "Μη αρχικοποιημένη σύνδεση shibboleth"
 
@@ -861,6 +870,3 @@ msgstr ""
 
 msgid "The requested page was not found."
 msgstr "Η σελίδα που ζητήσατε δεν βρέθηκε."
-
-msgid "Other elections guides"
-msgstr "Οδηγίες για άλλες ψηφοφορίες"

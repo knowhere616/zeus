@@ -449,7 +449,7 @@ def error(request, code=None, message=None, type='error'):
     titles_map = {
         '401': _('Authentication error')
     }
-    title = titles_map.get(code, 'Something went wrong !!!')
+    title = titles_map.get(code, 'Something went wrong')
     response = render_template(request, "zeus/error", {
         'title': _(title),
         'code': code,
