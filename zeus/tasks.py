@@ -131,7 +131,7 @@ def single_voter_email(voter_uuid,
 @task(rate_limit=getattr(settings, 'ZEUS_VOTER_EMAIL_RATE', '20/m'),
       ignore_result=True)
 def batch_voter_email(voter_uuids,
-                       *args):
+                       *args, **kwargs):
     for voter_uuid in voter_uuids:
         _send_email(voter_uuid, *args)
 
