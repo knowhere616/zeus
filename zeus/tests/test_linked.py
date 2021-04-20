@@ -124,12 +124,14 @@ class TestLinkedPollsElection(TestElectionBase):
             r = self.c.post(
                 upload_voters_location,
                 {'voters_file': file(voter_files[p_uuid]),
-                 'encoding': 'iso-8859-7'}
+                 'encoding': 'iso-8859-7',
+                 'voters_upload_terms': 'yes'}
                 )
             if poll.linked_ref:
                 self.assertEqual(r.status_code, 403)
             else:
-                self.c.post(upload_voters_location, {'confirm_p': 1, 'encoding': 'iso-8859-7'})
+                r = self.c.post(upload_voters_location, {'confirm_p': 1, 'encoding': 'iso-8859-7', 'voters_upload_terms': 'yes'}, follow=True)
+                self.assertEqual(r.status_code, 200)
 
         e = Election.objects.get(uuid=self.e_uuid)
         voters = e.voters.count()
@@ -154,9 +156,10 @@ class TestLinkedPollsElection(TestElectionBase):
         r = self.c.post(
             upload_voters_location,
             {'voters_file': file(voter_files[poll.uuid]),
-                'encoding': 'iso-8859-7'}
+                'encoding': 'iso-8859-7',
+                'voters_upload_terms': 'yes'}
             )
-        r = self.c.post(upload_voters_location, {'confirm_p': 1, 'encoding': 'iso-8859-7'}, follow=True)
+        r = self.c.post(upload_voters_location, {'confirm_p': 1, 'encoding': 'iso-8859-7', 'voters_upload_terms': 'yes'}, follow=True)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(voters_count, poll.voters.count())
 

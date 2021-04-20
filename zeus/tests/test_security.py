@@ -81,6 +81,7 @@ class TestAdminsPermissions(SetUpAdminAndClientMixin, TestCase):
                               'help_email': 'test@test.com',
                               'help_phone': 6988888888,
                               'communication_language': 'el',
+                              'terms_consent': 'true',
 
                             }
 

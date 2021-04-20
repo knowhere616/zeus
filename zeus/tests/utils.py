@@ -79,6 +79,7 @@ class SetUpAdminAndClientMixin():
             'help_phone': 6988888888,
             'communication_language': conf.get('com_lang', 'en'),
             'official': None,
+            'terms_consent': 'true',
             }
 
         self.login_data = {'username': 'test_admin', 'password': 'test_admin'}
