@@ -123,7 +123,7 @@
             {% if settings.FOOTER_LOGO %}
             <img src="/static/footer-logo.gif" alt="Zeus logo" /> | 
             {% endif %}
-            <a href="/static/docs/zeus_privacy_statement.pdf">{% trans "Δήλωση Ιδιωτικότητας" %}</a> |
+            <a href="/static/docs/{% trans "zeus_privacy_statement_en.pdf" %}">{% trans "Privacy statement" %}</a> |
             <a href="{% url "terms" %}">{% trans "Terms of use" %}</a>
           </span>
           {% if user and user.is_admin %}
