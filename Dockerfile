@@ -13,6 +13,7 @@ RUN apt-get install -y python-kombu python-lxml python-markdown
 RUN apt-get install -y python-openid python-psycopg2 python-pyicu 
 RUN apt-get install -y python-pyparsing python-reportlab python-reportlab-accel
 RUN apt-get install -y python-stdnum
+#RUN apt-get install -y python-raven
 RUN apt-get install -y python-yaml python-pip
 RUN apt-get install -y gunicorn
 

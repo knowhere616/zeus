@@ -102,6 +102,60 @@ logging.basicConfig(
     format = '%(asctime)s %(levelname)s %(message)s'
 )
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s - %(levelname)s %(module)s %(process)d - %(message)s'
+        },
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['file'],
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': '/srv/zeus-data/zeus.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        }
+    }
+}
+
+ACTIVATE_SENTRY = False
+SENTRY = {
+    'activate': False if os.environ.get("NO_SENTRY") else ACTIVATE_SENTRY,
+    'sentry_dsn': '<DSN_HERE>'
+}
+
+if SENTRY['activate']:
+    import raven
+    sentry_dsn = os.getenv("SENTRY_DSN") or SENTRY['sentry_dsn']
+    if not sentry_dsn:
+        raise RuntimeError("Sentry dsn not configured neither as environmental"
+                           " variable nor in the settings.py file")
+    RAVEN_CONFIG = {
+        'dsn': sentry_dsn,
+        'release': 'zeus@v0.1',
+    }
+    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)
+    LOGGING['handlers']['sentry'] = {
+        'class': 'raven.contrib.django.handlers.SentryHandler'
+    }
+    LOGGING['loggers']['django.request']['handlers'] = ['sentry', 'mail_admins']
+
 # A random string
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY
 SECRET_KEY = None

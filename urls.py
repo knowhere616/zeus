@@ -43,6 +43,7 @@ app_patterns += patterns(
     (r'^i18n/setlang', 'zeus.views.site.setlang'),
     (r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^account_administration/', include('account_administration.urls')),
+    url(r'^intentional-error$', 'zeus.views.site.intentional_error'),
 )
 
 urlpatterns = patterns(

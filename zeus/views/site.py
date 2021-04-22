@@ -25,7 +25,7 @@ from helios.models import User, Election, notify_account_request
 from heliosauth.models import UserGroup
 from zeus.models import Institution
 from zeus.utils import email_is_valid, resolve_ip
-from zeus.auth import ZeusUser
+from zeus.auth import ZeusUser, superadmin_required
 
 from zeus.stv_count_reports import stv_count_and_report
 
@@ -495,3 +495,7 @@ def csv_report(request):
         'user': user,
         'data': data
     })
+
+@superadmin_required
+def intentional_error(request):
+    raise Exception(request.GET.get('msg', 'intentional error'))
