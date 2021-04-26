@@ -30,7 +30,7 @@ from django.forms.formsets import BaseFormSet
 from helios.models import Election, Poll, Trustee, Voter
 from heliosauth.models import User
 
-from zeus.utils import extract_trustees, election_trustees_to_text, resolve_terms_help_text
+from zeus.utils import extract_trustees, election_trustees_to_text, resolve_terms_options
 from zeus.widgets import JqSplitDateTimeField, JqSplitDateTimeWidget
 from zeus import help_texts as help
 from zeus.utils import undecalize, ordered_dict_prepend
@@ -132,10 +132,12 @@ class ElectionForm(forms.ModelForm):
     remote_mixes = forms.BooleanField(label=_('Multiple mixnets'),
                                       required=False,
                                       help_text=help.remote_mixes)
+    legal_representative = forms.CharField(label=_('Legal representative'), 
+                                           required=True, 
+                                           help_text=None)
     terms_consent = forms.BooleanField(label=_('Terms consent'), 
                                        required=True, 
                                        help_text=None)
-
     FIELD_REQUIRED_FEATURES = {
         'trustees': ['edit_trustees'],
         'name': ['edit_name'],
@@ -190,14 +192,18 @@ class ElectionForm(forms.ModelForm):
 
         self.creating = True
         self._initial_data = {}
+        election_owner = owner
         if self.instance and self.instance.pk:
             self._initial_data = {}
             for field in LOG_CHANGED_FIELDS:
                 self._initial_data[field] = self.initial[field]
             self.creating = False
+            election_owner = self.instance.admins.filter()[0]
+            
 
         # user-specific terms text
-        self.terms_text = parse_markdown_unsafe(_(resolve_terms_help_text(owner)))
+        terms_options = resolve_terms_options(election_owner)
+        self.terms_text = parse_markdown_unsafe(_(terms_options.get('terms_text')))
         self.fields['terms_consent'].help_text = self.terms_text
         # terms consent is required and only available during election creation
         # otherwise, enforce value to True and disable the checkbox input
@@ -205,7 +211,14 @@ class ElectionForm(forms.ModelForm):
             self.fields['terms_consent'].widget.attrs['disabled'] = True
             self.fields['terms_consent'].widget.attrs['checked'] = True
             self.fields['terms_consent'].required = False
-
+        
+        if not terms_options.get('require_legal_representative'):
+            del self.fields['legal_representative']
+        else:
+            if not self.creating:
+                self.fields['legal_representative'].widget.attrs['disabled'] = True
+                self.fields['legal_representative'].required = False
+                self.fields['legal_representative'].initial = self.instance.legal_representative
 
         eligible_types = owner.eligible_election_types
         if not self.creating and self.instance:
@@ -325,6 +338,8 @@ class ElectionForm(forms.ModelForm):
         if saved.sms_api_enabled:
             saved.sms_data = self.owner.sms_data
 
+        if self.creating:
+            saved.legal_representative = self.cleaned_data.get('legal_representative', None)
         saved.save()
         if saved.feature_edit_trustees:
             saved.update_trustees(trustees)

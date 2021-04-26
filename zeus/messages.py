@@ -20,3 +20,5 @@ VOTER_QUICK_GUIDE = _('Voter quick guide for')
 LANG_EL = _('Greek')
 LANG_EN = _('English')
 LANG_RO = _('Romanian')
+
+TERMS_CUSTOM_CONSENT_TEXT1 = _('terms custom consent text1')

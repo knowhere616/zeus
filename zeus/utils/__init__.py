@@ -535,14 +535,17 @@ def safe_unlink(path):
         os.unlink(path)
 
 
-def resolve_terms_help_text(user):
-    config = getattr(settings, 'TERMS_CONSENT_TEXT_MAP', {})
-    terms_text = None
-    for group in user.user_groups.filter():
-        terms_text = config.get(group.name, terms_text)
+def resolve_terms_options(user):
+    all_options = getattr(settings, 'TERMS_CONSENT_OPTIONS_MAP', {})
     _ = lambda x: x
-    dflt = _('I consent that I have read, understood, and agree to the [service terms](/zeus/terms/).')
-    return terms_text or dflt
+    default_text = _('I consent that I have read, understood, and agree to the [service terms](/zeus/terms/).')
+    user_options = {
+        'require_legal_representative': False,
+        'terms_text': default_text,
+    }
+    for group in user.user_groups.filter():
+        user_options.update(all_options.get(group.name, {}))
+    return user_options
 
 
 def parse_markdown_unsafe(text):

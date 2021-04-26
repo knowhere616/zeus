@@ -3,6 +3,8 @@ import datetime
 import json
 import os
 
+from django.template.defaultfilters import safe
+
 try:
   from collections import OrderedDict
 except ImportError:
@@ -58,7 +60,7 @@ def add_or_update(request, election=None):
                 election.logger.info(u"Terms accepted: '%s'", election_form.terms_text)
                 msg = "New election created. \n\nTerms accepted: %s" % election_form.terms_text
                 subject = "New Zeus election"
-                election.notify_admins(msg=msg, subject=subject)
+                election.notify_admins(msg=safe(msg), subject=subject)
             if not election.has_helios_trustee():
                 election.generate_trustee()
             if election.polls.count() == 0:

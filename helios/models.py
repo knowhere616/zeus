@@ -316,6 +316,9 @@ class Election(ElectionTasks, HeliosModel, ElectionFeatures):
 
     created_at = models.DateTimeField(auto_now_add=True)
     terms_consent_at = models.DateTimeField(auto_now_add=True, null=True, default=None)
+    legal_representative = models.CharField(_("Legal representative"),
+                                  max_length=2000, null=True, blank=True,
+                                  default=None)
     modified_at = models.DateTimeField(auto_now=True)
     canceled_at = models.DateTimeField(default=None, null=True)
     cancelation_reason = models.TextField(default="")

@@ -6,6 +6,7 @@
 **************************
 - Election name: {{ election.name }} 
 - Election UUID: {{ election.uuid }} 
+- Election Legal representative: {{ election.legal_representative }} 
 - Election description: {{election.description}}
 - Election type: {{election_type}}
 - Starting date: {{election.voting_starts_at}}
