@@ -252,6 +252,12 @@ def cancel(request, election):
     election.completed_at = cancel_date
 
     election.save()
+
+    subject = "Election canceled"
+    msg = "Election canceled (%s)" % cancel_msg
+    election.logger.info(msg)
+    election.notify_admins(msg=safe(msg), subject=subject)
+
     url = election_reverse(election, 'index')
     return HttpResponseRedirect(url)
 
